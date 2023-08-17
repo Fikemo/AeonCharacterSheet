@@ -1,0 +1,12 @@
+{
+    "name": "test",
+    "description": "Test description",
+    "stats": {
+        "str": 5,
+        "dex": 4,
+        "con": 2,
+        "int": 1,
+        "wis": 8,
+        "cha": 9
+    }
+}

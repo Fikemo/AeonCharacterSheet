@@ -1,8 +1,25 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import App from "./App.js";
 import './index.css';
-import App from './App';
+import Events from './Events.js';
+import AeonCharacter from './AeonCharacter.js';
 import reportWebVitals from './reportWebVitals';
+// import CharacterSheet from './components/CharacterSheet.jsx';
+import "./styles/CharacterSheet.css";
+import theme from "./theme.js";
+
+import Button from "@mui/material/Button";
+
+import CssBaseline from "@mui/material/CssBaseline";
+import ThemeProvider from "@mui/material/styles/ThemeProvider";
+
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+
+const AC = new AeonCharacter();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -15,3 +32,7 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+
+window.AC = AC;
+
+export {AC};

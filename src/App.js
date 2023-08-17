@@ -1,25 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import * as React from 'react';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import SaveIcon from '@mui/icons-material/Save';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+        <ButtonGroup variant="contained" aria-label="outlined primary button group">
+            <Button 
+                variant="contained"
+                color="primary"
+                onClick={() => console.log("Save")}
+                startIcon={<SaveIcon />}
+            >
+                Save
+            </Button>
+            <Button 
+                variant="contained"
+                color="error"
+                onClick={() => console.log("Discard")}
+                startIcon={<DeleteIcon />}
+            >
+                Discard
+            </Button>
+        </ButtonGroup>
     </div>
   );
 }
-
-export default App;
