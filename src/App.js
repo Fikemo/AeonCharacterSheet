@@ -1,30 +1,23 @@
 import * as React from 'react';
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import SaveIcon from '@mui/icons-material/Save';
-import DeleteIcon from '@mui/icons-material/Delete';
+import "./App.css";
+
+import Container from '@mui/material/Container';
+import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
+import CharacterAppBar from './components/AppBar.js';
+import TourCard from './components/TourCard.js';
 
 export default function App() {
-  return (
-    <div>
-        <ButtonGroup variant="contained" aria-label="outlined primary button group">
-            <Button 
-                variant="contained"
-                color="primary"
-                onClick={() => console.log("Save")}
-                startIcon={<SaveIcon />}
-            >
-                Save
-            </Button>
-            <Button 
-                variant="contained"
-                color="error"
-                onClick={() => console.log("Discard")}
-                startIcon={<DeleteIcon />}
-            >
-                Discard
-            </Button>
-        </ButtonGroup>
-    </div>
-  );
+    return (
+        <div className="App">
+            <CharacterAppBar />
+            <Container maxWidth={false} sx={{marginY: 2}}>
+                <Grid2 container spacing={2}>
+                    <TourCard />
+                    <TourCard />
+                    <TourCard />
+                    <TourCard />
+                </Grid2>
+            </Container>
+        </div>
+    );
 }

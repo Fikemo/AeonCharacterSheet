@@ -1,0 +1,24 @@
+{
+    "name": "Default",
+    "faction": "None",
+    "race": "Human",
+    "description": "Default character description.",
+    "floatingPoints": 30,
+    "health": 100,
+    "stats": {
+        "strength": 0,
+        "presence": 0,
+        "agility": 0,
+        "intelligence": 0,
+        "spirit": 0,
+        "constitution": 0
+    },
+    "statModifiers": {
+        "strength": 0,
+        "presence": 0,
+        "agility": 0,
+        "intelligence": 0,
+        "spirit": 0,
+        "constitution": 0
+    }
+}

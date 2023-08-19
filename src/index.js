@@ -14,16 +14,15 @@ import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
 
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
+import defaultCharacter from "./characters/default.json";
 
-const AC = new AeonCharacter();
+const AC = new AeonCharacter(defaultCharacter);
+window.AC = AC;
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
+    <CssBaseline />
     <App />
   </React.StrictMode>
 );
@@ -32,7 +31,3 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
-
-window.AC = AC;
-
-export {AC};
