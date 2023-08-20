@@ -28,26 +28,41 @@ export default function CharacterAppBar() {
     const handleFileInputChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            console.log("selected file: ", file);
+            // console.log("selected file: ", file);
 
             fileReader.onload = (e) => {
                 const json = JSON.parse(e.target.result);
-                console.log("json: ", json);
+                // console.log("json: ", json);
                 setACData(json);
             }
             fileReader.readAsText(file);
         }
     }
 
-    // Proxy the click event to the hidden file input element
     const handleFileUploadButtonClicked = () => {
         if (fileInputRef.current) {
             fileInputRef.current.click();
         }
     }
 
+    const handleFileDownloadButtonClicked = () => {
+        // Download window.AC.data as a JSON file
+        const jsonData = JSON.stringify(window.AC.data);
+        const blob = new Blob([jsonData], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${window.AC.data.name}.json`;
+        document.body.appendChild(a);
+        a.click();
+
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
     return (
-        <Box sx={{ flexGrow: 1}}>
+        <Box sx={{ flexGrow: 1, paddingBottom: 2}}>
             <AppBar position="static">
                 <Toolbar>
                     {!editingName && <Typography
@@ -95,7 +110,12 @@ export default function CharacterAppBar() {
                     >
                         <FileUploadIcon />
                     </IconButton>
-                    <IconButton color="inherit" aria-label='download' title="download">
+                    <IconButton
+                        color="inherit"
+                        aria-label='download'
+                        title="download"
+                        onClick={handleFileDownloadButtonClicked}
+                    >
                         <FileDownloadIcon />
                     </IconButton>
                 </Toolbar>
