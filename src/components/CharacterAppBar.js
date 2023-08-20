@@ -5,14 +5,15 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import useACData from '../hooks/useACData.js';
 
 // icons
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
+import { ACContext } from "../App.js";
+
 export default function CharacterAppBar() {
-    const [ACData, setACData] = useACData();
+    const [ACData, setACData] = React.useContext(ACContext);
     const [editingName, setEditingName] = React.useState(false);
 
     const fileInputRef = React.useRef(null);
@@ -32,7 +33,6 @@ export default function CharacterAppBar() {
 
             fileReader.onload = (e) => {
                 const json = JSON.parse(e.target.result);
-                // console.log("json: ", json);
                 setACData(json);
             }
             fileReader.readAsText(file);
@@ -92,7 +92,7 @@ export default function CharacterAppBar() {
                         onChange={(e) => {
                             setACData({...ACData, name: e.target.value});
                         }}
-                        value={ACData.name}
+                        value={ACData.name || ''}
                     />}
                     <input
                         ref={fileInputRef}

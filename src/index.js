@@ -5,11 +5,8 @@ import './index.css';
 import Events from './Events.js';
 import AeonCharacter from './AeonCharacter.js';
 import reportWebVitals from './reportWebVitals';
-// import CharacterSheet from './components/CharacterSheet.jsx';
 import "./styles/CharacterSheet.css";
 import theme from "./theme.js";
-
-import Button from "@mui/material/Button";
 
 import CssBaseline from "@mui/material/CssBaseline";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
