@@ -28,70 +28,97 @@ export const ACContext = React.createContext();
 function GridBox(props) {
     return (
         <Grid2 xs={12} sm={6} lg={3}>
-            <Box sx={{ border: "1px solid black", margin: "1%" }}>
+            <Box sx={{ margin: "1%" }}>
                 {props.children}
             </Box>
         </Grid2>
     )
 }
 
+/**
+    ___________________________
+    |          Title          |
+    |_________________________|
+    |                         |
+    |           Stat          |
+    |             +           |
+    |       Stat Modifier     |
+    |                         |
+    |                         |
+    |                         |
+    |                         |
+    |_________________________|
+    |  -   |    Stat   |   +  |
+    |______|___________|______|
+*/
+
 function StatBox(props) {
     const [ACData, setACData] = React.useContext(ACContext);
     const { stats, statModifiers } = ACData;
 
-    const height = "90px";
+    const height = "110px";
     return (
-        <Grid2 xs={12} sx={{height: height, border: "1px solid black"}}>
-            <Grid2 container spacing={0}>
+        <Grid2 xs={12} sx={{ height: height, border: "1px solid black", borderRadius: "20%", marginY: "3px" }}>
+            <Grid2 container spacing={0} flexDirection="column">
+                {/** Stat Title */}
+                <Grid2 xs>
+                    <Box sx={{ display: "flex", justifyContent: "center" }}>
+                        <Typography variant="h6" component="h6" fontSize={11}>
+                            {props.stat}
+                        </Typography>
+                    </Box>
+                </Grid2>
+
                 {/** Display current stat */}
-                <Grid2 xs={12}>
-                    <Typography variant="h6" component="h6" fontSize={11}>
-                        {props.stat}
-                    </Typography>
-                    <Typography variant="h6" component="h6" >
-                        {stats[props.stat] + statModifiers[props.stat]}
-                    </Typography>
+                <Grid2 xs>
+                    <Box sx={{ display: "flex", justifyContent: "center" }}>
+                        <Typography variant="h4" component="h6" >
+                            {stats[props.stat] + statModifiers[props.stat]}
+                        </Typography>
+                    </Box>
                 </Grid2>
 
-                {/** Add base stat */}
-                <Grid2 xs sx={{border: "1px solid black", display: "flex", justifyContent: "center", alignItems:"center"}}>
-                    <IconButton
-                        onClick={() => {
-                            setACData({
-                                ...ACData,
-                                stats: {
-                                    ...stats,
-                                    [props.stat]: stats[props.stat] + 1
-                                }
-                            })
-                        }}
-                    >
-                        <AddOutlinedIcon />
-                    </IconButton>
-                </Grid2>
+                <Grid2 container spacing={0}>
+                    {/** Subtract base stat */}
+                    <Grid2 xs={3} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                        <IconButton
+                            onClick={() => {
+                                setACData({
+                                    ...ACData,
+                                    stats: {
+                                        ...stats,
+                                        [props.stat]: stats[props.stat] - 1
+                                    }
+                                })
+                            }}
+                        >
+                            <RemoveOutlinedIcon />
+                        </IconButton>
+                    </Grid2>
 
-                {/** Display base stat */}
-                <Grid2 xs={6}>
-                    <Typography variant="h6" component="h6" >
-                        {stats[props.stat]}
-                    </Typography>
-                </Grid2>
+                    {/** Display base stat */}
+                    <Grid2 xs={6} display="flex" justifyContent="center" alignItems="center">
+                        <Typography variant="h6" component="h6" >
+                            {stats[props.stat]}
+                        </Typography>
+                    </Grid2>
 
-                {/** Subtract base stat */}
-                <Grid2 xs sx={{border: "1px solid black", display: "flex", justifyContent: "center", alignItems:"center"}}>
-                    <IconButton
-                        onClick={() => {
-                            setACData({
-                                ...ACData,
-                                stats: {
-                                    ...stats,
-                                    [props.stat]: stats[props.stat] - 1
-                                }
-                            })
-                        }}
-                    >
-                        <RemoveOutlinedIcon />
-                    </IconButton>
+                    {/** Add base stat */}
+                    <Grid2 xs={3} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                        <IconButton
+                            onClick={() => {
+                                setACData({
+                                    ...ACData,
+                                    stats: {
+                                        ...stats,
+                                        [props.stat]: stats[props.stat] + 1
+                                    }
+                                })
+                            }}
+                        >
+                            <AddOutlinedIcon />
+                        </IconButton>
+                    </Grid2>
                 </Grid2>
             </Grid2>
         </Grid2>
@@ -102,7 +129,7 @@ function StatBoxes(props) {
     const [ACData, setACData] = React.useContext(ACContext);
     const { stats } = ACData;
 
-    return  Object.keys(stats).map((statName, index) => {
+    return Object.keys(stats).map((statName, index) => {
         return (
             <StatBox key={index} stat={statName} />
         )
@@ -123,7 +150,7 @@ function CharacterSheetBody(props) {
                 <GridBox>
                     <Grid2 container spacing={0} rowSpacing={1}>
                         {/**Character Image Section */}
-                        <Grid2 xs={9}>
+                        <Grid2 xs={9} sx={{border: "1px solid black"}}>
                             <Box sx={{ height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
                                 <AddBoxOutlinedIcon sx={{ height: "50%", width: "50%" }} />
                             </Box>
@@ -146,43 +173,6 @@ function CharacterSheetBody(props) {
                             />
                         </Grid2>
                     </Grid2>
-                </GridBox>
-            </Grid2>
-        </Box>
-    )
-}
-
-function OnHold(props) {
-    return (
-        <Box sx={{ border: "1px solid black", marginX: "1%", minWidth: "350px" }}>
-            <Grid2 container spacing={1}>
-                <GridBox>
-                    <Grid2 container spacing={0}>
-                        <Grid2 xs={9}>
-                            <Box sx={{ height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                                <AddBoxOutlinedIcon color="" sx={{ height: "50%", width: "50%" }} />
-                            </Box>
-                        </Grid2>
-                        <Grid2 xs={3}>
-                            <Grid2 container spacing={0}>
-                                <StatBox />
-                                <StatBox />
-                                <StatBox />
-                                <StatBox />
-                                <StatBox />
-                                <StatBox />
-                            </Grid2>
-                        </Grid2>
-                    </Grid2>
-                </GridBox>
-                <GridBox>
-
-                </GridBox>
-                <GridBox>
-
-                </GridBox>
-                <GridBox>
-
                 </GridBox>
             </Grid2>
         </Box>

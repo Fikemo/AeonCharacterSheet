@@ -1,6 +1,6 @@
 {
     "name": "Jason",
-    "faction": "Json",
+    "faction": "Ondjager",
     "race": "Robot",
     "description": "I am loaded from a JSON file!",
     "floatingPoints": 0,

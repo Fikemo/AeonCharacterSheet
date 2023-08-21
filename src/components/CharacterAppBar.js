@@ -4,6 +4,7 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 
 // icons
@@ -102,22 +103,24 @@ export default function CharacterAppBar() {
                         style={{display: 'none'}}
                         onChange={handleFileInputChange}
                     />
-                    <IconButton
-                        color="inherit"
-                        aria-label='upload'
-                        title="upload"
-                        onClick={handleFileUploadButtonClicked}
-                    >
-                        <FileUploadIcon />
-                    </IconButton>
-                    <IconButton
-                        color="inherit"
-                        aria-label='download'
-                        title="download"
-                        onClick={handleFileDownloadButtonClicked}
-                    >
-                        <FileDownloadIcon />
-                    </IconButton>
+                    <Tooltip title="Upload">
+                        <IconButton
+                            color="inherit"
+                            aria-label='upload'
+                            onClick={handleFileUploadButtonClicked}
+                        >
+                            <FileUploadIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Download">
+                        <IconButton
+                            color="inherit"
+                            aria-label='download'
+                            onClick={handleFileDownloadButtonClicked}
+                        >
+                            <FileDownloadIcon />
+                        </IconButton>
+                    </Tooltip>
                 </Toolbar>
             </AppBar>
         </Box>
