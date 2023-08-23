@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/AeonCharacterSheet/static/css/main.fb2a659d.css",
-    "main.js": "/AeonCharacterSheet/static/js/main.fdb57ef9.js",
+    "main.css": "/AeonCharacterSheet/static/css/main.5ab7cb64.css",
+    "main.js": "/AeonCharacterSheet/static/js/main.cebfc0aa.js",
     "static/js/787.1dff9d22.chunk.js": "/AeonCharacterSheet/static/js/787.1dff9d22.chunk.js",
     "index.html": "/AeonCharacterSheet/index.html",
-    "main.fb2a659d.css.map": "/AeonCharacterSheet/static/css/main.fb2a659d.css.map",
-    "main.fdb57ef9.js.map": "/AeonCharacterSheet/static/js/main.fdb57ef9.js.map",
+    "main.5ab7cb64.css.map": "/AeonCharacterSheet/static/css/main.5ab7cb64.css.map",
+    "main.cebfc0aa.js.map": "/AeonCharacterSheet/static/js/main.cebfc0aa.js.map",
     "787.1dff9d22.chunk.js.map": "/AeonCharacterSheet/static/js/787.1dff9d22.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.fb2a659d.css",
-    "static/js/main.fdb57ef9.js"
+    "static/css/main.5ab7cb64.css",
+    "static/js/main.cebfc0aa.js"
   ]
 }
