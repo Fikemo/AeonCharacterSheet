@@ -3,37 +3,38 @@ import "./App.css";
 import { styled } from '@mui/material/styles';
 
 import useACData from './hooks/useACData';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 // Components
 import CharacterAppBar from './components/CharacterAppBar.js';
+import Tooltip from '@mui/material/Tooltip';
 
 // Layout
+import Grid from '@mui/material/Grid';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import Card from '@mui/material/Card';
 
 // Inputs
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 // icons
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import RemoveOutlinedIcon from '@mui/icons-material/RemoveOutlined';
 
-export const ACContext = React.createContext();
+import factions from "./sets/factions.json"
+import races from "./sets/races.json"
 
-function GridBox(props) {
-    return (
-        <Grid2 xs={12} sm={6} lg={3}>
-            <Box sx={{ margin: "1%" }}>
-                {props.children}
-            </Box>
-        </Grid2>
-    )
-}
+export const ACContext = React.createContext();
 
 /**
     ___________________________
@@ -58,70 +59,9 @@ function StatBox(props) {
 
     const height = "110px";
     return (
-        <Grid2 xs={12} sx={{ height: height, border: "1px solid black", borderRadius: "20%", marginY: "3px" }}>
-            <Grid2 container spacing={0} flexDirection="column">
-                {/** Stat Title */}
-                <Grid2 xs>
-                    <Box sx={{ display: "flex", justifyContent: "center" }}>
-                        <Typography variant="h6" component="h6" fontSize={11}>
-                            {props.stat}
-                        </Typography>
-                    </Box>
-                </Grid2>
+        <Grid>
 
-                {/** Display current stat */}
-                <Grid2 xs>
-                    <Box sx={{ display: "flex", justifyContent: "center" }}>
-                        <Typography variant="h4" component="h6" >
-                            {stats[props.stat] + statModifiers[props.stat]}
-                        </Typography>
-                    </Box>
-                </Grid2>
-
-                <Grid2 container spacing={0}>
-                    {/** Subtract base stat */}
-                    <Grid2 xs={3} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                        <IconButton
-                            onClick={() => {
-                                setACData({
-                                    ...ACData,
-                                    stats: {
-                                        ...stats,
-                                        [props.stat]: stats[props.stat] - 1
-                                    }
-                                })
-                            }}
-                        >
-                            <RemoveOutlinedIcon />
-                        </IconButton>
-                    </Grid2>
-
-                    {/** Display base stat */}
-                    <Grid2 xs={6} display="flex" justifyContent="center" alignItems="center">
-                        <Typography variant="h6" component="h6" >
-                            {stats[props.stat]}
-                        </Typography>
-                    </Grid2>
-
-                    {/** Add base stat */}
-                    <Grid2 xs={3} sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-                        <IconButton
-                            onClick={() => {
-                                setACData({
-                                    ...ACData,
-                                    stats: {
-                                        ...stats,
-                                        [props.stat]: stats[props.stat] + 1
-                                    }
-                                })
-                            }}
-                        >
-                            <AddOutlinedIcon />
-                        </IconButton>
-                    </Grid2>
-                </Grid2>
-            </Grid2>
-        </Grid2>
+        </Grid>
     )
 }
 
@@ -129,63 +69,130 @@ function StatBoxes(props) {
     const [ACData, setACData] = React.useContext(ACContext);
     const { stats } = ACData;
 
-    return Object.keys(stats).map((statName, index) => {
+    const statBoxes = Object.keys(stats).map((statName, index) => {
         return (
             <StatBox key={index} stat={statName} />
         )
     })
+
+    return (
+        <Grid container >
+            {statBoxes}
+        </Grid>
+    )
 }
 
 function CharacterSheetBody(props) {
     const [ACData, setACData] = React.useContext(ACContext);
 
     // When ACData.description changes, update the value of the character description text field
-    React.useEffect(() => {
-        document.getElementById("description").value = ACData.description;
-    }, [ACData.description]);
+    // React.useEffect(() => {
+    //     document.getElementById("description").value = ACData.description;
+    // }, [ACData.description]);
 
     return (
-        <Box sx={{ border: "1px solid black", marginX: "1%", minWidth: "350px" }}>
-            <Grid2 container spacing={1}>
-                <GridBox>
-                    <Grid2 container spacing={0} rowSpacing={1}>
-                        {/**Character Image Section */}
-                        <Grid2 xs={9} sx={{border: "1px solid black"}}>
-                            <Box sx={{ height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                                <AddBoxOutlinedIcon sx={{ height: "50%", width: "50%" }} />
-                            </Box>
-                        </Grid2>
-
-                        {/**Character Stats Section */}
-                        <Grid2 xs={3}>
-                            <StatBoxes />
-                        </Grid2>
-
-                        {/**Character Description */}
-                        <Grid2 xs={12}>
-                            <TextField
-                                id="description"
-                                label="Description"
-                                multiline
-                                rows={4}
+        <Box sx={{display: "flex", flexGrow: 1}}>
+            <Grid container spacing={1}>
+                <Grid item xs={12} lg={3} sx={{display:"flex"}}>
+                    <Stack spacing={1} sx={{flexGrow: 1}}>
+                        <Paper elevation={3}>
+                            <TextField 
                                 fullWidth
-                                defaultValue={ACData.description}
+                                id="characterName"
+                                placeholder='Name'
+                                defaultValue={ACData.name}
+                                onChange={(event) => {
+                                    setACData({...ACData, name: event.target.value});
+                                }}
                             />
-                        </Grid2>
-                    </Grid2>
-                </GridBox>
-            </Grid2>
+                        </Paper>
+                        <Paper elevation={3} sx={{display:"flex", justifyContent:"center", alignItems: "center", flex: "1 0 auto", minHeight: "300px"}}>
+                            <Tooltip title="Add Character Image" followCursor>
+                                <AddBoxOutlinedIcon sx={{width: "50%", height: "50%"}}/>
+                            </Tooltip>
+                        </Paper>
+                        <Paper>
+                            <Select 
+                                fullWidth
+                                id="race"
+                                placeholder='Race'
+                                defaultValue={ACData.race ?? "Human"}
+                                value={ACData.race}
+                                onChange={(event) => {
+                                    setACData({...ACData, race: event.target.value});
+                                }}
+                            >
+                                {Object.keys(races).map((race, index) => {
+                                    return (
+                                        <MenuItem key={index} value={race}>{race}</MenuItem>
+                                    )
+                                })}
+                            </Select>
+                        </Paper>
+                        <Paper>
+                            <Select 
+                                fullWidth
+                                id="faction"
+                                placeholder='Faction'
+                                defaultValue={ACData.faction ?? "None"}
+                                value={ACData.faction}
+                                onChange={(event) => {
+                                    setACData({...ACData, faction: event.target.value});
+                                }}
+                            >
+                                {Object.keys(factions).map((faction, index) => {
+                                    return (
+                                        <MenuItem key={index} value={faction}>
+                                            {faction}
+                                        </MenuItem>
+                                    )
+                                })}
+                            </Select>
+                        </Paper>
+                        <Paper elevation={3} sx={{}}>
+                            <TextField
+                                fullWidth
+                                multiline
+                                rows={5}
+                                id="description"
+                                placeholder='Description'
+                                defaultValue={ACData.description}
+                                onChange={(event) => {
+                                    setACData({...ACData, description: event.target.value});
+                                }}
+                            />
+                        </Paper>
+                    </Stack>
+                </Grid>
+                <Grid item xs={12} lg={3} >
+                    <Paper elevation={3} sx={{height: "100%"}}>
+
+                    </Paper>
+                </Grid>
+                <Grid item xs={12} lg={3} >
+                    <Paper elevation={3} sx={{height: "100%"}}>
+
+                    </Paper>
+                </Grid>
+                <Grid item xs={12} lg={3} >
+                    <Paper elevation={3} sx={{height: "100%"}}>
+
+                    </Paper>
+                </Grid>
+            </Grid>
         </Box>
     )
 }
 
 export default function App() {
+    const theme = useTheme();
+    const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
+
     return (
-        <div className="App">
+        <Box height={isLargeScreen ? "100vh" : "auto"} display="flex" padding="clamp(0px, 0.5%, 20px)" backgroundColor="lightgray">
             <ACContext.Provider value={useACData()}>
-                <CharacterAppBar />
                 <CharacterSheetBody />
             </ACContext.Provider>
-        </div>
+        </Box>
     );
 }

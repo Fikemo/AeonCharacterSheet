@@ -7,6 +7,13 @@ import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+
+import factions from "../sets/factions.json";
+
 // icons
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
@@ -95,6 +102,45 @@ export default function CharacterAppBar() {
                         }}
                         value={ACData.name || ''}
                     />}
+
+                    <FormControl sx={{ m: 1, minWidth: 120, width: 300}}>
+                        <InputLabel id="faction-select-label" style={{color: 'white'}}>Faction</InputLabel>
+                        <Select
+                            labelId="faction-select-label"
+                            id="faction-select"
+                            value={ACData.faction || ''}
+                            label="Faction"
+                            style={{color: 'white'}}
+                            MenuProps={{
+                                anchorOrigin: {
+                                    vertical: "bottom",
+                                    horizontal: "left"
+                                },
+                                transformOrigin: {
+                                    vertical: "top",
+                                    horizontal: "left"
+                                },
+                                getContentAnchorEl: null,
+                                PaperProps: {
+                                    style: {
+                                        maxHeight: 48 * 4.5,
+                                        width: 'auto',
+                                        color: 'black'
+                                    },
+                                },
+                            }}
+                            onChange={(e) => {
+                                setACData({...ACData, faction: e.target.value});
+                            }}
+                        >
+                            {Object.keys(factions).map((faction) => {
+                                return (
+                                    <MenuItem key={faction} value={faction} style={{color: 'black'}}>{faction}</MenuItem>
+                                )
+                            })}
+                        </Select>
+                    </FormControl>
+
                     <input
                         ref={fileInputRef}
                         accept=".json"
