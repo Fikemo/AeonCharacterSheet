@@ -1,9 +1,10 @@
 {
-    "name": "Default",
+    "name": "",
     "faction": "None",
     "race": "Human",
-    "description": "Default character description.",
+    "description": "",
     "floatingPoints": 30,
+    "maxHealth": 100,
     "health": 100,
     "stats": {
         "strength": 0,
