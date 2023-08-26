@@ -391,8 +391,22 @@ export default function App() {
     const theme = useTheme();
     const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
     const height100 = isLargeScreen ? "100%" : "auto";
+    const height100vh = isLargeScreen ? "100vh" : "auto";
 
     const [ACData, dispatchACData] = useReducer(reducer, window.AC.data);
+
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    const handleOpenFileInput = () => {
+        const fileInput = document.getElementById("fileInput");
+        fileInput.click();
+    }
+
+    const handleFileInputChange = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        setSelectedImage(URL.createObjectURL(file));
+    }
 
     return (
         <ACContext.Provider value={[ACData, dispatchACData]}>
@@ -425,7 +439,25 @@ export default function App() {
                             {/**Character Image */}
                             <Paper elevation={paperElevation} sx={{ flex: "1 0 auto", display: "flex", alignItems: "center", justifyContent: "center", minHeight: "400px" }}>
                                 <Tooltip title="Add Character Image" followCursor>
-                                    <AddBoxOutlinedIcon sx={{ width: "50%", height: "50%" }} />
+                                    <IconButton
+                                        onClick={handleOpenFileInput}
+                                        sx={{ width: "100%", height: "100%", aspectRatio: 1 }}
+                                    >
+                                        {selectedImage ?
+                                            (<img
+                                                src={selectedImage}
+                                                alt="character"
+                                                style={{ width: "100%", height: "100%", objectFit: "contain" }} />)
+                                            : (<AddBoxOutlinedIcon sx={{width:"100%", height: "100%"}}/>)
+                                        }
+                                        <input
+                                            type="file"
+                                            id='fileInput'
+                                            accept=".png, .jpg, .jpeg"
+                                            style={{ display: "none" }}
+                                            onChange={handleFileInputChange}
+                                        />
+                                    </IconButton>
                                 </Tooltip>
                             </Paper>
                             <Box display="flex">
