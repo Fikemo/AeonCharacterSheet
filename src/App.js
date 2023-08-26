@@ -5,6 +5,7 @@ import {
     useReducer,
     useContext,
     createContext,
+    useId,
 } from 'react';
 import "./App.css";
 import { styled } from '@mui/material/styles';
@@ -16,17 +17,29 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import Tooltip from '@mui/material/Tooltip';
 
 // Layout
-import Divider from '@mui/material/Divider';
-import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import Card from '@mui/material/Card';
-import FormHelperText from '@mui/material/FormHelperText';
+import {
+    Autocomplete,
+    Box,
+    Card,
+    Container,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Divider,
+    FormHelperText,
+    Grid,
+    List,
+    Paper,
+    Stack,
+    Toolbar
+} from '@mui/material';
+import Grid2 from "@mui/material/Unstable_Grid2"
 
 // Inputs
 import FormControl from '@mui/material/FormControl';
+import Button from '@mui/material/Button';
 import InputLabel from '@mui/material/InputLabel';
 import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -41,34 +54,144 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import RemoveOutlinedIcon from '@mui/icons-material/RemoveOutlined';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import InfoIcon from '@mui/icons-material/Info';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import factions from "./sets/factions.json"
 import races from "./sets/races.json"
+import weapons from "./sets/weapons.json"
 
 export const ACContext = createContext();
 
 const paperElevation = 5;
 
-/**
-    ___________________________
-    |          Title          |
-    |_________________________|
-    |                         |
-    |           Stat          |
-    |             +           |
-    |       Stat Modifier     |
-    |                         |
-    |                         |
-    |                         |
-    |                         |
-    |_________________________|
-    |  -   |    Stat   |   +  |
-    |______|___________|______|
-*/
-
 const reducer = (current, update) => {
     window.AC.data = { ...current, ...update };
     return { ...current, ...update };
+}
+
+const AddInventoryItemDialog = ({ open, onClose }) => {
+    const [ACData, dispatchACData] = useContext(ACContext);
+
+    const [newItem, setNewItem] = useState({});
+
+    const handleAddItem = () => {
+        console.log(newItem)
+        dispatchACData({ inventory: [...ACData.inventory, newItem] });
+        onClose();
+    }
+
+    const inventoryOptions = [];
+    for (const weaponType in weapons) {
+        for (const weapon in weapons[weaponType]) {
+            weapons[weaponType][weapon].type = weaponType;
+            weapons[weaponType][weapon].label = weapons[weaponType][weapon].name;
+            inventoryOptions.push(weapons[weaponType][weapon]);
+        }
+    }
+
+    return (
+        <Dialog open={open} onClose={onClose}>
+            <DialogTitle>Add Item</DialogTitle>
+            <DialogContent>
+                <Stack spacing={1}>
+                    <DialogContentText>
+                        Add an item to your inventory.
+                    </DialogContentText>
+                    <Autocomplete
+                        id="item-select"
+                        options={inventoryOptions}
+                        renderInput={(params) => <TextField {...params} label="Item" />}
+                        blurOnSelect
+                        freeSolo
+                        onChange={(event, value) => {
+                            console.log(value);
+                            setNewItem(value);
+                        }}
+                        onInputChange={(event, value) => {
+                            if (!inventoryOptions.includes(value)) {
+                            setNewItem({ name: value });
+                            }
+                        }}
+                    />
+
+                    <TextField
+                        id="item-notes"
+                        label="Notes"
+                        fullWidth
+                        multiline
+                        rows={4}
+                        value={newItem.notes ?? ""}
+                        onChange={(event) => {
+                            setNewItem({ ...newItem, notes: event.target.value });
+                        }}
+                    />
+                </Stack>
+                
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={onClose}>
+                    Cancel
+                </Button>
+                <Button onClick={handleAddItem} >
+                    Add
+                </Button>
+            </DialogActions>
+        </Dialog>
+    )
+};
+
+const InventoryItem = ({item, onRemove}) => {
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const handleDialogOpen = () => {
+        setIsDialogOpen(true);
+    }
+
+    const handleDialogClose = () => {
+        setIsDialogOpen(false);
+    }
+
+    const addSpacesAndCapitalize = (str) => {
+        if (typeof str !== 'string') return;
+        return str.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, str => str.toUpperCase());
+    }
+
+    return (
+        <Card sx={{marginY: "2px"}}>
+            <Box sx={{display: "flex", flexDirection: "row", alignItems: "center"}}>
+                <Typography sx={{flexGrow: 1, margin: "16px"}}>{item.name}</Typography>
+                <IconButton
+                    onClick={handleDialogOpen}
+                >
+                    <InfoIcon />
+                </IconButton>
+                <Dialog open={isDialogOpen} onClose={handleDialogClose} maxWidth="md" fullWidth>
+                    <DialogTitle>{item.name}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {addSpacesAndCapitalize(item.type)}
+                        </DialogContentText>
+                        <DialogContentText>
+                            {item.notes}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleDialogClose}>
+                            Close
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+                <IconButton
+                    onClick={(event) => {
+                        onRemove(item);
+                    }}
+                >
+                    <DeleteIcon />
+                </IconButton>
+            </Box>
+        </Card>
+    )
 }
 
 const StatBox = (props) => {
@@ -128,6 +251,28 @@ export default function App() {
 
     const fileInputRef = useRef(null);
 
+    const [openAddItemDialog, setOpenAddItemDialog] = useState(false);
+    const handleOpenAddItemDialog = () => {
+        setOpenAddItemDialog(true);
+    }
+    const handleCloseAddItemDialog = () => {
+        setOpenAddItemDialog(false);
+    }
+
+    const removeItem = (item) => {
+        const newInventory = ACData.inventory.filter((inventoryItem) => {
+            return inventoryItem !== item;
+        });
+        dispatchACData({ inventory: newInventory });
+    }
+
+    const inventoryItems = ACData.inventory?.map((item, index) => {
+        return (
+            <InventoryItem key={index} item={item} onRemove={removeItem} />
+        )
+    })
+
+
     return (
         <ACContext.Provider value={[ACData, dispatchACData]}>
             <Box
@@ -136,6 +281,11 @@ export default function App() {
                 backgroundColor="lightgray"
                 sx={{ flex: "1 0 auto" }}
             >
+                <AddInventoryItemDialog
+                    open={openAddItemDialog}
+                    onClose={handleCloseAddItemDialog}
+                />
+
                 <Grid2 container spacing={1} sx={{ backgroundColor: "gray", height: height100 }}>
                     <Grid2 xs={12} md={6} lg={3} >
                         <Stack spacing={1} sx={{ height: height100 }}>
@@ -242,7 +392,7 @@ export default function App() {
                             {/**Health */}
                             <Paper elevation={paperElevation}>
                                 <FormControl fullWidth>
-                                    <FormHelperText>Health </FormHelperText>
+                                    <FormHelperText>Health</FormHelperText>
                                     <TextField
                                         id="health"
                                         type="number"
@@ -258,7 +408,23 @@ export default function App() {
                         </Stack>
                     </Grid2>
                     <Grid2 xs={12} md={6} lg={3} >
-
+                        <Stack spacing={1} sx={{ height: height100 }}>
+                            {/**Inventory */}
+                            <Paper elevation={paperElevation} sx={{height:"max(40%, 200px)", display: "flex", flexDirection: "column"}}>
+                                <Toolbar>
+                                    <Typography variant="h6" style={{ flexGrow: 1}}>
+                                        Inventory
+                                    </Typography>
+                                    <IconButton onClick={handleOpenAddItemDialog}>
+                                        <AddOutlinedIcon/>
+                                    </IconButton>
+                                </Toolbar>
+                                <Divider />
+                                <List sx={{ overflow: "auto"}}>
+                                    {inventoryItems}
+                                </List>
+                            </Paper>
+                        </Stack>
                     </Grid2>
                     <Grid2 xs={12} md={6} lg={3} >
                         <Stack spacing={1} sx={{ height: height100 }}>

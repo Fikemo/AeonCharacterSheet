@@ -20,5 +20,35 @@
         "intelligence": 5,
         "spirit": 0,
         "constitution": 0
-    }
+    },
+    "inventory": [
+        {
+            "name": "Flail",
+            "bluntSlash": {
+                "damage": [15, 25],
+                "strengthMultiplier": 2
+            },
+            "reach": {
+                "range": 3
+            },
+            "strength": 8,
+            "notes": "Flail. Cannot cause bleed"
+        },
+        {
+            "name": "Executioner's Great Sword",
+            "slash": {
+                "damage": [130, 160]
+            },
+            "stab": {
+                "damage": [1],
+                "strengthMultiplier": 1
+            },
+            "durability": 100,
+            "strikes": 3,
+            "reach": {
+                "range": 5
+            },
+            "strength": 18
+        }
+    ]
 }

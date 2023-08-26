@@ -1,0 +1,183 @@
+{
+    "oneHandedSwords": {
+        "bastardSword": {
+            "name": "Bastard Sword",
+            "slash": {
+                "damage": [40,50,60,70]
+            },
+            "stab": {
+                "damage": [30,45,60]
+            },
+            "durability": 65,
+            "strikes": 3,
+            "reach": {
+                "range": 3
+            },
+            "strength": 8
+        },
+        "armingSword": {
+            "name": "Arming Sword",
+            "slash": {
+                "damage": [30,40,50,60]
+            },
+            "stab": {
+                "damage": [30,45,60]
+            },
+            "durability": 60,
+            "strikes": 3,
+            "reach": {
+                "range": 3
+            },
+            "strength": 6
+        },
+        "rapier": {
+            "name": "Rapier",
+            "slash": {
+                "damage": [25, 30, 35, 40]
+            },
+            "stab": {
+                "damage": [40, 60, 80]
+            },
+            "durability": 50,
+            "strikes": 3,
+            "reach": {
+                "range": 3,
+                "lengthy": true
+            },
+            "strength": 6
+        },
+        "sideSword": {
+            "name": "Side Sword",
+            "slash": {
+                "damage": [30, 40, 45, 50]
+            },
+            "stab": {
+                "damage": [40, 50, 60]
+            },
+            "durability": 60,
+            "strikes": 3,
+            "reach": {
+                "range": 3
+            },
+            "strength": 5
+        },
+        "scimitar": {
+            "name": "Scimitar",
+            "slash": {
+                "damage": [40, 45, 50, 60]
+            },
+            "stab": {
+                "damage": [15, 20, 25]
+            },
+            "durability": 40,
+            "strikes": 2,
+            "reach": {
+                "range": 3
+            },
+            "strength": 5
+        },
+        "falchion": {
+            "name": "Falchion",
+            "slash": {
+                "damage": [40, 45, 50, 60]
+            },
+            "stab": {
+                "damage": [20, 25, 30]
+            },
+            "durability": 55,
+            "strikes": 2,
+            "reach": {
+                "range": 3
+            },
+            "strength": 6
+        }
+    },
+    "twoHandedSwords": {
+        "executionersGreatSword": {
+            "name": "Executioner's Great Sword",
+            "slash": {
+                "damage": [130, 160]
+            },
+            "stab": {
+                "damage": [1],
+                "strengthMultiplier": 1
+            },
+            "durability": 100,
+            "strikes": 3,
+            "reach": {
+                "range": 5
+            },
+            "strength": 18
+        },
+        "estoc": {
+            "name": "Estoc",
+            "slash": {
+                "damage": [1],
+                "strengthMultiplier": 1
+            },
+            "stab": {
+                "damage": [70, 90]
+            },
+            "durability": 120,
+            "strikes": 3,
+            "reach": {
+                "range": 5,
+                "lengthy": true
+            },
+            "strength": 12,
+            "notes": "Ignores Mail Armor and below on Stabs"
+        }
+    },
+    "oneHandedMaces": {
+        "mace": {
+            "name": "Mace",
+            "bluntSlash": {
+                "damage": [30, 40]
+            },
+            "bluntStab": {
+                "damage": [10, 20]
+            },
+            "durability": 100,
+            "strikes": 3,
+            "reach": {
+                "range": 2,
+                "lengthy": true
+            },
+            "strength": 6,
+            "notes": "Cannot cause bleed"
+        },
+        "warHammer": {
+            "name": "War Hammer",
+            "slash": {
+                "damage": [15,25],
+                "type": "armorPiercing"
+            },
+            "bluntSlash": {
+                "damage": [30, 40, 50]
+            },
+            "stab": {
+                "damage": [1],
+                "strengthMultiplier": 1
+            },
+            "durability": 30,
+            "strikes": 3,
+            "reach": {
+                "range": 2,
+                "lengthy": true
+            },
+            "strength": 7
+        },
+        "flail": {
+            "name": "Flail",
+            "bluntSlash": {
+                "damage": [15, 25],
+                "strengthMultiplier": 2
+            },
+            "reach": {
+                "range": 3
+            },
+            "strength": 8,
+            "notes": "Flail. Cannot cause bleed"
+        }
+    }
+}

@@ -21,5 +21,8 @@
         "intelligence": 0,
         "spirit": 0,
         "constitution": 0
-    }
+    },
+    "inventory": [
+        
+    ]
 }

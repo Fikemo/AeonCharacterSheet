@@ -1,0 +1,45 @@
+[
+    {
+        "name": "riding",
+        "label": "Riding",
+        "type": "general",
+        "pointsForNovice": 1,
+        "description": {
+            "unskilled": "Cannot Ride",
+            "novice": "Can ride horses and wargs",
+            "skilled": "Can ride nay beast if tamed"
+        },
+        "abilities": [
+            {
+                "label": "Riding Speed",
+                "description": {
+                    "all": "Movement speed while mounted is double normal speed."
+                }
+            },
+            {
+                "label": "Mounted Attack",
+                "description": {
+                    "all": "All melee attacks from a mounted position towards unmounted target have their damage doubled.\nAttacks on the other mounted targets deal normal damage."
+                }
+            },
+            {
+                "label": "Trample",
+                "description": {
+                    "all": "Target up to 3 enemies within a 5 foot radius of each other and charge them at full speed. In addition to any charge attack made while mounted you can trample up to 3 additional targets. If successful targets each take D% as Blunt Physical Damage.\nUses STR + roll for accuracy.",
+                    "unskilled": "D10 - 2",
+                    "novice": "D10",
+                    "skilled": "D10 + 2"
+                }
+            }
+        ]
+    },
+    {
+        "name": "unarmed",
+        "label": "Unarmed",
+        "type": "general",
+        "pointsForNovice": 1,
+        "description": {
+            
+        }
+    }
+]
