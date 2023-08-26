@@ -16,6 +16,8 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 // Components
 import Tooltip from '@mui/material/Tooltip';
 
+import Grid2 from "@mui/material/Unstable_Grid2"
+
 // Layout
 import {
     Autocomplete,
@@ -33,9 +35,9 @@ import {
     List,
     Paper,
     Stack,
+    SvgIcon,
     Toolbar
 } from '@mui/material';
-import Grid2 from "@mui/material/Unstable_Grid2"
 
 // Inputs
 import FormControl from '@mui/material/FormControl';
@@ -56,7 +58,17 @@ import FileUploadIcon from '@mui/icons-material/FileUpload';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import InfoIcon from '@mui/icons-material/Info';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
+// Dice Icons
+import d4Icon from "./d4.svg";
+import d6Icon from "./d6.svg";
+import d8Icon from "./d8.svg";
+import d10Icon from "./d10.svg";
+import d12Icon from "./d12.svg";
+import d20Icon from "./d20.svg";
+
+import defaultCharacter from "./characters/default.json";
 import factions from "./sets/factions.json"
 import races from "./sets/races.json"
 import weapons from "./sets/weapons.json"
@@ -64,11 +76,6 @@ import weapons from "./sets/weapons.json"
 export const ACContext = createContext();
 
 const paperElevation = 5;
-
-const reducer = (current, update) => {
-    window.AC.data = { ...current, ...update };
-    return { ...current, ...update };
-}
 
 const AddInventoryItemDialog = ({ open, onClose }) => {
     const [ACData, dispatchACData] = useContext(ACContext);
@@ -240,16 +247,102 @@ const StatBoxes = () => {
     )
 }
 
-export default function App() {
-    const theme = useTheme();
-    const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
-    const height100 = isLargeScreen ? "100%" : "auto";
+const reducer = (current, update) => {
+    window.AC.data = { ...current, ...update };
+    localStorage.setItem('ACData', JSON.stringify(window.AC.data));
+    return { ...current, ...update };
+}
 
-    const [ACData, dispatchACData] = useReducer(reducer, window.AC.data);
+const UploadButton = (props) => {
+    const [ACData, dispatchACData] = useContext(ACContext);
 
     const characterFileReader = new FileReader();
-
     const fileInputRef = useRef(null);
+
+    return (
+        <>
+            <input
+                type="file"
+                ref={fileInputRef}
+                accept=".json"
+                id="file-upload-button"
+                style={{ display: "none" }}
+                onChange={(event) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                        characterFileReader.onload = (event) => {
+                            try {
+                                const character = JSON.parse(event.target.result);
+                                dispatchACData(character);
+                            } catch (e) {
+                                console.error(e);
+                            }
+                        }
+                        characterFileReader.readAsText(file);
+                    }
+                }}
+            />
+            <Tooltip title="Import Character" >
+                <IconButton
+                    onClick={(event) => {
+                        if (fileInputRef.current) {
+                            fileInputRef.current.click();
+                        }
+                    }}
+                >
+                    <FileUploadIcon />
+                </IconButton>
+            </Tooltip>
+        </>
+    )
+}
+
+const DownloadButton = (props) => {
+    const handleFileDownloadButtonClicked = () => {
+        // Download window.AC.data as a JSON file
+        const jsonData = JSON.stringify(window.AC.data);
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${window.AC.data.name}.json`;
+        document.body.appendChild(a);
+        a.click();
+
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    return (
+        <Tooltip title="Download Character" >
+            <IconButton
+                onClick={handleFileDownloadButtonClicked}
+            >
+                <FileDownloadIcon />
+            </IconButton>
+        </Tooltip>
+    )
+}
+
+const ResetButton = (props) => {
+    const [ACData, dispatchACData] = useContext(ACContext);
+
+    return (
+        <Tooltip title="Reset Character" >
+            <IconButton
+                onClick={(event) => {
+                    dispatchACData(defaultCharacter);
+                }}
+            >
+                <DeleteIcon />
+            </IconButton>
+        </Tooltip>
+    )
+}
+
+const Inventory = (props) => {
+    const [ACData, dispatchACData] = useContext(ACContext);
 
     const [openAddItemDialog, setOpenAddItemDialog] = useState(false);
     const handleOpenAddItemDialog = () => {
@@ -272,6 +365,34 @@ export default function App() {
         )
     })
 
+    return (
+        <Paper elevation={paperElevation} sx={{ height: "max(40%, 200px)", display: "flex", flexDirection: "column" }}>
+            <AddInventoryItemDialog
+                open={openAddItemDialog}
+                onClose={handleCloseAddItemDialog}
+            />
+            <Toolbar>
+                <Typography variant="h6" style={{ flexGrow: 1 }}>
+                    Inventory
+                </Typography>
+                <IconButton onClick={handleOpenAddItemDialog}>
+                    <AddOutlinedIcon />
+                </IconButton>
+            </Toolbar>
+            <Divider />
+            <List sx={{ overflow: "auto" }}>
+                {inventoryItems}
+            </List>
+        </Paper>
+    )
+}
+
+export default function App() {
+    const theme = useTheme();
+    const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
+    const height100 = isLargeScreen ? "100%" : "auto";
+
+    const [ACData, dispatchACData] = useReducer(reducer, window.AC.data);
 
     return (
         <ACContext.Provider value={[ACData, dispatchACData]}>
@@ -281,11 +402,6 @@ export default function App() {
                 backgroundColor="lightgray"
                 sx={{ flex: "1 0 auto" }}
             >
-                <AddInventoryItemDialog
-                    open={openAddItemDialog}
-                    onClose={handleCloseAddItemDialog}
-                />
-
                 <Grid2 container spacing={1} sx={{ backgroundColor: "gray", height: height100 }}>
                     <Grid2 xs={12} md={6} lg={3} >
                         <Stack spacing={1} sx={{ height: height100 }}>
@@ -410,58 +526,63 @@ export default function App() {
                     <Grid2 xs={12} md={6} lg={3} >
                         <Stack spacing={1} sx={{ height: height100 }}>
                             {/**Inventory */}
-                            <Paper elevation={paperElevation} sx={{height:"max(40%, 200px)", display: "flex", flexDirection: "column"}}>
-                                <Toolbar>
-                                    <Typography variant="h6" style={{ flexGrow: 1}}>
-                                        Inventory
-                                    </Typography>
-                                    <IconButton onClick={handleOpenAddItemDialog}>
-                                        <AddOutlinedIcon/>
-                                    </IconButton>
-                                </Toolbar>
-                                <Divider />
-                                <List sx={{ overflow: "auto"}}>
-                                    {inventoryItems}
-                                </List>
-                            </Paper>
+                            <Inventory />
                         </Stack>
                     </Grid2>
                     <Grid2 xs={12} md={6} lg={3} >
                         <Stack spacing={1} sx={{ height: height100 }}>
-                            {/**Import and dowload buttons */}
+                            {/**Upload, download, reset, dice */}
                             <Paper elevation={paperElevation}>
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    accept=".json"
-                                    id="file-upload-button"
-                                    style={{ display: "none" }}
-                                    onChange={(event) => {
-                                        const file = event.target.files[0];
-                                        if (file) {
-                                            characterFileReader.onload = (event) => {
-                                                try {
-                                                    const character = JSON.parse(event.target.result);
-                                                    dispatchACData(character);
-                                                } catch (e) {
-                                                    console.error(e);
-                                                }
-                                            }
-                                            characterFileReader.readAsText(file);
-                                        }
-                                    }}
-                                />
-                                <Tooltip title="Import Character" >
-                                    <IconButton
-                                        onClick={(event) => {
-                                            if (fileInputRef.current) {
-                                                fileInputRef.current.click();
-                                            }
-                                        }}
-                                    >
-                                        <FileUploadIcon />
+                                <UploadButton />
+                                <DownloadButton />
+                                <ResetButton />
+                                <Tooltip title="D4">
+                                    <IconButton>
+                                        <img src={d4Icon} alt="d4" height={24} width={24} />
                                     </IconButton>
                                 </Tooltip>
+                                <Tooltip title="D6">
+                                    <IconButton>
+                                        <img src={d6Icon} alt="d6" height={24} width={24} />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title="D8">
+                                    <IconButton>
+                                        <img src={d8Icon} alt="d8" height={24} width={24} />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title="D10">
+                                    <IconButton>
+                                        <img src={d10Icon} alt="d10" height={24} width={24} />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title="D12">
+                                    <IconButton>
+                                        <img src={d12Icon} alt="d12" height={24} width={24} />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title="D20">
+                                    <IconButton>
+                                        <img src={d20Icon} alt="d20" height={24} width={24} />
+                                    </IconButton>
+                                </Tooltip>
+                            </Paper>
+                            {/**Notes */}
+                            <Paper elevation={paperElevation}>
+                                <FormControl fullWidth>
+                                    <FormHelperText>Notes</FormHelperText>
+                                    <TextField
+                                        multiline
+                                        rows={30}
+                                        fullWidth
+                                        id="notes"
+                                        placeholder='Notes'
+                                        value={ACData.notes}
+                                        onChange={(event) => {
+                                            dispatchACData({ notes: event.target.value });
+                                        }}
+                                    />
+                                </FormControl>
                             </Paper>
                         </Stack>
                     </Grid2>

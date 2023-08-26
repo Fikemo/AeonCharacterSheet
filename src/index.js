@@ -13,7 +13,8 @@ import ThemeProvider from "@mui/material/styles/ThemeProvider";
 
 import defaultCharacter from "./characters/default.json";
 
-const AC = new AeonCharacter(defaultCharacter);
+const ACData = JSON.parse(localStorage.getItem('ACData')) || defaultCharacter;
+const AC = new AeonCharacter(ACData);
 window.AC = AC;
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
