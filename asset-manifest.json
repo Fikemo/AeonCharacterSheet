@@ -1,15 +1,21 @@
 {
   "files": {
     "main.css": "/AeonCharacterSheet/static/css/main.5ab7cb64.css",
-    "main.js": "/AeonCharacterSheet/static/js/main.cebfc0aa.js",
+    "main.js": "/AeonCharacterSheet/static/js/main.8ee60653.js",
     "static/js/787.1dff9d22.chunk.js": "/AeonCharacterSheet/static/js/787.1dff9d22.chunk.js",
+    "static/media/d12.svg": "/AeonCharacterSheet/static/media/d12.8e8901d8b7b6581b9a49f56a0731a5c3.svg",
+    "static/media/d10.svg": "/AeonCharacterSheet/static/media/d10.3f122aae81d70d5cd786ede287fd60c0.svg",
     "index.html": "/AeonCharacterSheet/index.html",
+    "static/media/d20.svg": "/AeonCharacterSheet/static/media/d20.7d3007b77081daf56e100b9cfa5516e2.svg",
+    "static/media/d8.svg": "/AeonCharacterSheet/static/media/d8.5c22f4fdabd6ea68225d62d21f6274ca.svg",
+    "static/media/d4.svg": "/AeonCharacterSheet/static/media/d4.6213a80ab1294a6126609ed9ebceb3c9.svg",
+    "static/media/d6.svg": "/AeonCharacterSheet/static/media/d6.da6f7d009113300669f0730d9f0a1499.svg",
     "main.5ab7cb64.css.map": "/AeonCharacterSheet/static/css/main.5ab7cb64.css.map",
-    "main.cebfc0aa.js.map": "/AeonCharacterSheet/static/js/main.cebfc0aa.js.map",
+    "main.8ee60653.js.map": "/AeonCharacterSheet/static/js/main.8ee60653.js.map",
     "787.1dff9d22.chunk.js.map": "/AeonCharacterSheet/static/js/787.1dff9d22.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5ab7cb64.css",
-    "static/js/main.cebfc0aa.js"
+    "static/js/main.8ee60653.js"
   ]
 }
