@@ -1,35 +1,35 @@
-{
-    "None": {
-
+[
+    {
+        "name": "None"
     },
-    "Ondjager": {
-        
+    {
+        "name": "Ondjager"
     },
-    "Kingdom of Antocan": {
-        
+    {
+        "name": "Kingdom of Antocan"
     },
-    "Principality of Kahvenite": {
-        
+    {
+        "name": "Principality of Kahvenite"
     },
-    "Allahor": {
-        
+    {
+        "name": "Allahor"
     },
-    "Whitefire Orcs": {
-        
+    {
+        "name": "Whitefire Orcs"
     },
-    "The Savage Herds": {
-        
+    {
+        "name": "The Savage Herds"
     },
-    "The Rast Clans": {
-        
+    {
+        "name": "The Rast Clans"
     },
-    "Goblin Tribes": {
-        
+    {
+        "name": "Goblin Tribes"
     },
-    "Leybor Traders": {
-        
+    {
+        "name": "Leybor Traders"
     },
-    "Edgerunners": {
-        
+    {
+        "name": "Edgerunners"
     }
-}
+]

@@ -1,32 +1,32 @@
-{
-    "Human": {
-
+[
+    {
+        "name": "Human"
     },
-    "Orc": {
-
+    {
+        "name": "Orc"
     },
-    "Elf": {
-
+    {
+        "name": "Elf"
     },
-    "Obsidian": {
-
+    {
+        "name": "Obsidian"
     },
-    "Rast": {
-
+    {
+        "name": "Rast"
     },
-    "Goblin": {
-
+    {
+        "name": "Goblin"
     },
-    "Herdsman": {
-
+    {
+        "name": "Herdsman"
     },
-    "Netherman": {
-
+    {
+        "name": "Netherman"
     },
-    "Voidborn": {
-
+    {
+        "name": "Voidborn"
     },
-    "Great Goblin": {
-        
+    {
+        "name": "Great Goblin"
     }
-}
+]
