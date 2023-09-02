@@ -6,6 +6,7 @@
     "floatingPoints": 30,
     "maxHealth": 100,
     "health": 100,
+    "image": null,
     "stats": {
         "strength": 0,
         "presence": 0,
@@ -22,7 +23,10 @@
         "spirit": 0,
         "constitution": 0
     },
-    "inventory": [
-        
-    ]
+    "inventory": [],
+    "skills": [],
+    "gold": 0,
+    "silver": 0,
+    "copper": 0,
+    "notes": ""
 }

@@ -110,6 +110,7 @@ const CharacterName = (props) => {
                     onChange={(e) => dispatchACData({ name: e.target.value })}
                     InputProps={{
                         style: {
+                            fontFamily: "Macondo",
                             fontSize: "2rem"
                         }
                     }}
@@ -312,7 +313,6 @@ const StatBox = (props) => {
                         type="number"
                         value={ACData.stats?.[props.stat] ?? 0}
                         onChange={(e) => {
-                            console.log(e.target.value)
                             if (e.target.value === "") {
                                 dispatchACData({ stats: { ...ACData.stats, [props.stat]: 0 } })
                             }
@@ -861,6 +861,75 @@ const Inventory = (props) => {
     )
 }
 
+const Money = (props) => {
+    const [ACData, dispatchACData] = useContext(ACContext);
+
+    return (
+        <Grid2 container columnSpacing={1}>
+            <Grid2 xs={4}>
+                <Paper elevation={paperElevation}>
+                    <FormControl fullWidth>
+                        <FormHelperText>Gold</FormHelperText>
+                        <TextField
+                            id="gold-input"
+                            type="number"
+                            value={ACData.gold ?? 0}
+                            onChange={(e) => { dispatchACData({ gold: 
+                                e.target.value === "" ? e.target.value : parseInt(e.target.value)
+                            }) }}
+                            onBlur={(e) => {
+                                if (e.target.value === "") {
+                                    dispatchACData({ gold: 0 })
+                                }
+                            }}
+                        />
+                    </FormControl>
+                </Paper>
+            </Grid2>
+            <Grid2 xs={4}>
+                <Paper elevation={paperElevation}>
+                    <FormControl fullWidth>
+                        <FormHelperText>Silver</FormHelperText>
+                        <TextField
+                            id="silver-input"
+                            type="number"
+                            value={ACData.silver ?? 0}
+                            onChange={(e) => { dispatchACData({ silver:
+                                e.target.value === "" ? e.target.value : parseInt(e.target.value)
+                            }) }}
+                            onBlur={(e) => {
+                                if (e.target.value === "") {
+                                    dispatchACData({ silver: 0 })
+                                }
+                            }}
+                        />
+                    </FormControl>
+                </Paper>
+            </Grid2>
+            <Grid2 xs={4}>
+                <Paper elevation={paperElevation}>
+                    <FormControl fullWidth>
+                        <FormHelperText>Copper</FormHelperText>
+                        <TextField
+                            id="copper-input"
+                            type="number"
+                            value={ACData.copper ?? 0}
+                            onChange={(e) => { dispatchACData({ copper:
+                                e.target.value === "" ? e.target.value : parseInt(e.target.value)
+                            }) }}
+                            onBlur={(e) => {
+                                if (e.target.value === "") {
+                                    dispatchACData({ copper: 0 })
+                                }
+                            }}
+                        />
+                    </FormControl>
+                </Paper>
+            </Grid2>
+        </Grid2>
+    )
+}
+
 export default function App() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -891,6 +960,7 @@ export default function App() {
                         </Grid2>
                         <Grid2 xs={12} md={6} xl={3} >
                             <Stack spacing={1} >
+                                <Money />
                                 <Inventory />
                             </Stack>
                         </Grid2>
