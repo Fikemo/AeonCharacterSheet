@@ -51,6 +51,10 @@ import {
     MenuItem,
     InputLabel,
     useMediaQuery,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    AccordionActions,
 } from "@mui/material";
 
 // icons
@@ -64,6 +68,7 @@ import {
     FileUpload,
     FileDownload,
     Clear,
+    ExpandMore
 } from "@mui/icons-material"
 
 // dice icons
@@ -128,8 +133,12 @@ const CharacterImage = (props) => {
             setImage(decodeURIComponent(ACData.imageURI));
         }
 
+        return () => {
+            Events.off("reset");
+        }
+
     }, []);
-    
+
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
         if (!file) return;
@@ -138,8 +147,9 @@ const CharacterImage = (props) => {
         reader.onload = (e) => {
             setImage(e.target.result);
 
-            dispatchACData({ imageURI: 
-                encodeURIComponent(e.target.result)
+            dispatchACData({
+                imageURI:
+                    encodeURIComponent(e.target.result)
             })
         };
 
@@ -174,7 +184,7 @@ const AgeAndRace = (props) => {
                         id="age-input"
                         type="number"
                         value={editingAge ? tempAge : ACData.age ?? 0}
-                        onChange={(e) => {setTempAge(e.target.value)}}
+                        onChange={(e) => { setTempAge(e.target.value) }}
                         onFocus={() => {
                             setEditingAge(true);
                             setTempAge(ACData.age ?? 0);
@@ -264,7 +274,7 @@ const Health = (props) => {
                     id="health-input"
                     type="number"
                     value={editing ? tempHealth : ACData.health ?? 0}
-                    onChange={(e) => {setTempHealth(e.target.value)}}
+                    onChange={(e) => { setTempHealth(e.target.value) }}
                     onFocus={() => {
                         setEditing(true);
                         setTempHealth(ACData.health ?? 0);
@@ -479,19 +489,19 @@ const DiceHistory = (props) => {
     };
 
     return (
-        <Paper elevation={paperElevation} sx={{ height: 500}}>
+        <Paper elevation={paperElevation}>
             <Toolbar ref={toolbarRef} >
-                <Typography sx={{ flexGrow: 1 }}>
+                <Typography sx={{flexGrow: 1}}>
                     Dice History
                 </Typography>
                 <Tooltip title="Clear Dice History" >
                     <IconButton onClick={clearDiceHistory}>
-                        <Clear />
+                        <Delete />
                     </IconButton>
                 </Tooltip>
             </Toolbar>
             <Divider />
-            <List sx={{ height: 500-toolbarRef.current?.clientHeight, overflow: "auto" }}>
+            <List sx={{height: "200px", overflow: "auto" }}>
                 {diceHistory.map((roll, index) => (
                     <ListItem key={index} dense>
                         <ListItemText primary={roll} />
@@ -522,10 +532,139 @@ const Notes = (props) => {
     )
 }
 
+const SkillDialog = (props) => {
+    const [ACData, dispatchACData] = useContext(ACContext);
+
+    const [tempSkill, setTempSkill] = useState({
+        name: props.edit ? ACData.skills[props.index].name : "",
+        description: props.edit ? ACData.skills[props.index].description : "",
+    });
+
+    const handleClose = () => {
+        props.onClose();
+    };
+
+    const handleAdd = () => {
+        dispatchACData({
+            skills: [...ACData.skills, tempSkill],
+        });
+        handleClose();
+    };
+
+    const handleEdit = () => {
+        dispatchACData({
+            skills: ACData.skills.map((s, i) => {
+                if (i === props.index) {
+                    return tempSkill;
+                }
+                return s;
+            }),
+        });
+        handleClose();
+    }
+
+    return (
+        <Dialog open={props.open} onClose={handleClose} fullWidth>
+            <DialogTitle>Skill</DialogTitle>
+            <DialogContent>
+                <TextField
+                    id="skill-name-input"
+                    label="Name"
+                    fullWidth
+                    value={tempSkill.name}
+                    onChange={(e) => setTempSkill({ ...tempSkill, name: e.target.value })}
+                    sx = {{ mt: 1 }}
+                />
+                <TextField
+                    id="skill-description-input"
+                    label="Description"
+                    fullWidth
+                    multiline
+                    rows={8}
+                    value={tempSkill.description}
+                    onChange={(e) => setTempSkill({ ...tempSkill, description: e.target.value })}
+                    sx={{ mt: 2 }}
+                />
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleClose}>Cancel</Button>
+                {props.edit ? <Button onClick={handleEdit}>Save</Button>: <Button onClick={handleAdd}>Add</Button>}
+            </DialogActions>
+        </Dialog>
+    )
+}
+
+const StyledAccordion = styled((props) => (
+    <Accordion disableGutters elevation={0} square {...props} />
+))(({ theme }) => ({
+    border: `1px solid ${theme.palette.divider}`,
+    '&:not(:last-child)': {
+        borderBottom: 0,
+    },
+    '&:before': {
+        display: 'none',
+    },
+}));
+
+const StyledAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
+    padding: theme.spacing(2),
+    borderTop: `1px solid ${theme.palette.divider}`,
+    backgroundColor: "#f5f5f5",
+}));
+
+const SkillAccordion = (props) => {
+    const [ACData, dispatchACData] = useContext(ACContext);
+
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+
+    return (
+        <StyledAccordion key={props.index}>
+            <AccordionSummary
+                expandIcon={<ExpandMore />}
+            >
+                <Typography>{props.skill.name}</Typography>
+            </AccordionSummary>
+            <StyledAccordionDetails>
+                <Typography>{props.skill.description}</Typography>
+            </StyledAccordionDetails>
+            <AccordionActions sx={{ backgroundColor: "#f5f5f5" }}>
+                <SkillDialog
+                    open={editDialogOpen}
+                    onClose={() => setEditDialogOpen(false)}
+                    edit
+                    index={props.index}
+                    display="hidden"
+                />
+                <IconButton
+                    title = "Edit Skill"
+                    onClick={() => {
+                        setEditDialogOpen(true);
+                    }}
+                >
+                    <Edit />
+                </IconButton>
+                <IconButton
+                    title = "Delete Skill"
+                    onClick={() => {
+                        dispatchACData({
+                            skills: ACData.skills.filter((s, i) => i !== props.index),
+                        });
+                    }}
+                >
+                    <Delete />
+                </IconButton>
+            </AccordionActions>
+        </StyledAccordion>
+    )
+}
+
 const Skills = (props) => {
     const [ACData, dispatchACData] = useContext(ACContext);
 
+    const theme = useTheme();
+
     const toolbarRef = useRef(null);
+    const [skillDialogOpen, setSkillDialogOpen] = useState(false);
 
     return (
         <Paper elevation={paperElevation}>
@@ -534,11 +673,30 @@ const Skills = (props) => {
                     Skills
                 </Typography>
                 <Tooltip title="Add Skill" >
-                    <IconButton>
+                    <IconButton
+                        onClick={() => {
+                            setSkillDialogOpen(true);
+                        }}
+                    >
                         <AddOutlined />
                     </IconButton>
                 </Tooltip>
+                <SkillDialog
+                    open={skillDialogOpen}
+                    onClose={() => setSkillDialogOpen(false)}
+                    edit={false}
+                />
             </Toolbar>
+            <Divider />
+            <div style={{ height: "400px", overflowY: "auto" }}>
+                {Object.keys(ACData.skills).map((s, index) => {
+                    const skill = ACData.skills[s];
+
+                    return (
+                        <SkillAccordion key={index} skill={skill} index={index} />
+                    )
+                })}
+            </div>
         </Paper>
     )
 }
