@@ -5,11 +5,14 @@ import {
     useReducer,
     useContext,
     createContext,
+    forwardRef,
 } from "react";
 
 import { styled, useTheme } from "@mui/material/styles";
 
 import Grid2 from "@mui/material/Unstable_Grid2";
+
+import Events from "./Events";
 
 import {
     Autocomplete,
@@ -112,14 +115,32 @@ const CharacterName = (props) => {
 }
 
 const CharacterImage = (props) => {
+    const [ACData, dispatchACData] = useContext(ACContext);
     const [image, setImage] = useState(null);
 
+    useEffect(() => {
+        Events.on("reset", () => {
+            setImage(null);
+            dispatchACData({ imageURI: null });
+        })
+
+        if (ACData.imageURI && !image) {
+            setImage(decodeURIComponent(ACData.imageURI));
+        }
+
+    }, []);
+    
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
+        if (!file) return;
         const reader = new FileReader();
 
         reader.onload = (e) => {
             setImage(e.target.result);
+
+            dispatchACData({ imageURI: 
+                encodeURIComponent(e.target.result)
+            })
         };
 
         reader.readAsDataURL(file);
@@ -141,6 +162,8 @@ const CharacterImage = (props) => {
 
 const AgeAndRace = (props) => {
     const [ACData, dispatchACData] = useContext(ACContext);
+    const [tempAge, setTempAge] = useState("0");
+    const [editingAge, setEditingAge] = useState(false);
 
     return (
         <Stack direction="row" spacing={1}>
@@ -150,8 +173,18 @@ const AgeAndRace = (props) => {
                     <TextField
                         id="age-input"
                         type="number"
-                        value={ACData.age || 0}
-                        onChange={(e) => dispatchACData({ age: e.target.value })}
+                        value={editingAge ? tempAge : ACData.age ?? 0}
+                        onChange={(e) => {setTempAge(e.target.value)}}
+                        onFocus={() => {
+                            setEditingAge(true);
+                            setTempAge(ACData.age ?? 0);
+                        }}
+                        onBlur={() => {
+                            setEditingAge(false);
+                            if (tempAge !== "") {
+                                dispatchACData({ age: parseInt(tempAge) });
+                            }
+                        }}
                     />
                 </FormControl>
             </Paper>
@@ -220,6 +253,8 @@ const Description = (props) => {
 
 const Health = (props) => {
     const [ACData, dispatchACData] = useContext(ACContext);
+    const [tempHealth, setTempHealth] = useState("0");
+    const [editing, setEditing] = useState(false);
 
     return (
         <Paper elevation={paperElevation}>
@@ -228,8 +263,18 @@ const Health = (props) => {
                 <TextField
                     id="health-input"
                     type="number"
-                    value={ACData.health || 0}
-                    onChange={(e) => dispatchACData({ health: e.target.value })}
+                    value={editing ? tempHealth : ACData.health ?? 0}
+                    onChange={(e) => {setTempHealth(e.target.value)}}
+                    onFocus={() => {
+                        setEditing(true);
+                        setTempHealth(ACData.health ?? 0);
+                    }}
+                    onBlur={() => {
+                        setEditing(false);
+                        if (tempHealth !== "") {
+                            dispatchACData({ health: parseInt(tempHealth) });
+                        }
+                    }}
                 />
             </FormControl>
         </Paper>
@@ -375,6 +420,7 @@ const ResetButton = (props) => {
             <IconButton
                 onClick={(event) => {
                     dispatchACData(defaultCharacter);
+                    Events.emit("reset");
                 }}
             >
                 <Delete />
