@@ -563,6 +563,13 @@ const SkillDialog = (props) => {
         handleClose();
     }
 
+    useEffect(() => {
+        setTempSkill({
+            name: props.edit ? ACData.skills[props.index].name : "",
+            description: props.edit ? ACData.skills[props.index].description : "",
+        })
+    }, [props.open])
+
     return (
         <Dialog open={props.open} onClose={handleClose} fullWidth>
             <DialogTitle>Skill</DialogTitle>
@@ -661,8 +668,6 @@ const SkillAccordion = (props) => {
 const Skills = (props) => {
     const [ACData, dispatchACData] = useContext(ACContext);
 
-    const theme = useTheme();
-
     const toolbarRef = useRef(null);
     const [skillDialogOpen, setSkillDialogOpen] = useState(false);
 
@@ -701,6 +706,161 @@ const Skills = (props) => {
     )
 }
 
+const InventoryAccordion = (props) => {
+    const [ACData, dispatchACData] = useContext(ACContext);
+
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+
+    return (
+        <StyledAccordion key={props.index}>
+            <AccordionSummary
+                expandIcon={<ExpandMore />}
+            >
+                <Typography>{props.item.name}</Typography>
+            </AccordionSummary>
+            <StyledAccordionDetails>
+                <Typography>{props.item.description}</Typography>
+            </StyledAccordionDetails>
+            <AccordionActions sx={{ backgroundColor: "#f5f5f5" }}>
+                <InventoryDialog
+                    open={editDialogOpen}
+                    onClose={() => setEditDialogOpen(false)}
+                    edit
+                    index={props.index}
+                    display="hidden"
+                />
+                <IconButton
+                    title = "Edit Item"
+                    onClick={() => {
+                        setEditDialogOpen(true);
+                    }}
+                >
+                    <Edit />
+                </IconButton>
+                <IconButton
+                    title = "Delete Item"
+                    onClick={() => {
+                        dispatchACData({
+                            inventory: ACData.inventory.filter((s, i) => i !== props.index),
+                        });
+                    }}
+                >
+                    <Delete />
+                </IconButton>
+            </AccordionActions>
+        </StyledAccordion>
+    )
+}
+
+const InventoryDialog = (props) => {
+    const [ACData, dispatchACData] = useContext(ACContext);
+
+    const [tempItem, setTempItem] = useState({
+        name: props.edit ? ACData.inventory[props.index].name : "",
+        description: props.edit ? ACData.inventory[props.index].description : "",
+    });
+
+    const handleClose = () => {
+        props.onClose();
+    };
+
+    const handleAdd = () => {
+        dispatchACData({
+            inventory: [...ACData.inventory, tempItem],
+        });
+        handleClose();
+    };
+
+    const handleEdit = () => {
+        dispatchACData({
+            inventory: ACData.inventory.map((s, i) => {
+                if (i === props.index) {
+                    return tempItem;
+                }
+                return s;
+            }),
+        });
+        handleClose();
+    }
+
+    useEffect(() => {
+        setTempItem({
+            name: props.edit ? ACData.inventory[props.index].name : "",
+            description: props.edit ? ACData.inventory[props.index].description : "",
+        })
+    }, [props.open])
+
+    return (
+        <Dialog open={props.open} onClose={handleClose} fullWidth>
+            <DialogTitle>Inventory Item</DialogTitle>
+            <DialogContent>
+                <TextField
+                    id="inventory-item-name-input"
+                    label="Name"
+                    fullWidth
+                    value={tempItem.name}
+                    onChange={(e) => setTempItem({ ...tempItem, name: e.target.value })}
+                    sx={{ mt: 1 }}
+                />
+                <TextField
+                    id="inventory-item-description-input"
+                    label="Description"
+                    fullWidth
+                    multiline
+                    rows={8}
+                    value={tempItem.description}
+                    onChange={(e) => setTempItem({ ...tempItem, description: e.target.value })}
+                    sx={{ mt: 2 }}
+                />
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleClose}>Cancel</Button>
+                {props.edit ? <Button onClick={handleEdit}>Save</Button> : <Button onClick={handleAdd}>Add</Button>}
+            </DialogActions>
+        </Dialog>
+    )
+}
+
+const Inventory = (props) => {
+    const [ACData, dispatchACData] = useContext(ACContext);
+
+    const [inventoryDialogOpen, setInventoryDialogOpen] = useState(false);
+
+    return (
+        <Paper elevation={paperElevation}>
+            <Toolbar>
+                <Typography sx={{ flexGrow: 1 }}>
+                    Inventory
+                </Typography>
+                <Tooltip title="Add Item" >
+                    <IconButton
+                        onClick={() => {
+                            setInventoryDialogOpen(true);
+                        }}
+                    >
+                        <AddOutlined />
+                    </IconButton>
+                </Tooltip>
+                <InventoryDialog
+                    open={inventoryDialogOpen}
+                    onClose={() => setInventoryDialogOpen(false)}
+                    edit={false}
+                />
+            </Toolbar>
+            <Divider />
+            <div style={{ height: "400px", overflowY: "auto" }}>
+                {Object.keys(ACData.inventory).map((s, index) => {
+                    const item = ACData.inventory[s];
+
+                    return (
+                        <InventoryAccordion key={index} item={item} index={index} />
+                    )
+                })}
+            </div>
+        </Paper>
+    )
+}
+
 export default function App() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -730,7 +890,9 @@ export default function App() {
                             </Stack>
                         </Grid2>
                         <Grid2 xs={12} md={6} xl={3} >
-
+                            <Stack spacing={1} >
+                                <Inventory />
+                            </Stack>
                         </Grid2>
                         <Grid2 xs={12} md={6} xl={3} >
                             <Stack spacing={1} >
