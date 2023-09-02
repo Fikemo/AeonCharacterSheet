@@ -68,7 +68,8 @@ import {
     FileUpload,
     FileDownload,
     Clear,
-    ExpandMore
+    ExpandMore,
+    RestartAlt
 } from "@mui/icons-material"
 
 // dice icons
@@ -267,28 +268,70 @@ const Health = (props) => {
     const [tempHealth, setTempHealth] = useState("0");
     const [editing, setEditing] = useState(false);
 
+    const [tempMaxHealth, setTempMaxHealth] = useState("0");
+    const [editingMaxHealth, setEditingMaxHealth] = useState(false);
+
     return (
-        <Paper elevation={paperElevation}>
-            <FormControl fullWidth>
-                <FormHelperText>Health</FormHelperText>
-                <TextField
-                    id="health-input"
-                    type="number"
-                    value={editing ? tempHealth : ACData.health ?? 0}
-                    onChange={(e) => { setTempHealth(e.target.value) }}
-                    onFocus={() => {
-                        setEditing(true);
-                        setTempHealth(ACData.health ?? 0);
-                    }}
-                    onBlur={() => {
-                        setEditing(false);
-                        if (tempHealth !== "") {
-                            dispatchACData({ health: parseInt(tempHealth) });
-                        }
-                    }}
-                />
-            </FormControl>
-        </Paper>
+        <Stack direction="row" spacing={1}>
+            <Paper elevation={paperElevation} sx={{ width: "20%" }}>
+                <FormControl fullWidth>
+                    <FormHelperText>Max Health</FormHelperText>
+                    <TextField
+                        id="max-health-input"
+                        type="number"
+                        value={editingMaxHealth ? tempMaxHealth : ACData.maxHealth ?? 0}
+                        onChange={(e) => { setTempMaxHealth(e.target.value) }}
+                        onFocus={() => {
+                            setEditingMaxHealth(true);
+                            setTempMaxHealth(ACData.maxHealth ?? 0);
+                        }}
+                        onBlur={() => {
+                            setEditingMaxHealth(false);
+                            if (tempMaxHealth !== "") {
+                                dispatchACData({ maxHealth: parseInt(tempMaxHealth) });
+                            }
+                        }}
+                    />
+                </FormControl>
+            </Paper>
+            <Paper elevation={paperElevation} sx={{ width: "80%" }}>
+                <FormControl fullWidth>
+                    <FormHelperText>Health</FormHelperText>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                        <div style={{ flexGrow: 1 }}>
+                            <TextField
+                                id="health-input"
+                                fullWidth
+                                type="number"
+                                value={editing ? tempHealth : ACData.health ?? 0}
+                                onChange={(e) => {
+                                    setTempHealth(e.target.value);
+                                }}
+                                onFocus={() => {
+                                    setEditing(true);
+                                    setTempHealth(ACData.health ?? 0);
+                                }}
+                                onBlur={() => {
+                                    setEditing(false);
+                                    if (tempHealth !== "") {
+                                        dispatchACData({ health: parseInt(tempHealth) });
+                                    }
+                                }}
+                            />
+                        </div>
+                        {/* Set health to maxHealth button */}
+                        <IconButton
+                            onClick={() => {
+                                dispatchACData({ health: ACData.maxHealth });
+                            }}
+                        >
+                            <RestartAlt />
+                        </IconButton>
+                    </div>
+                </FormControl>
+            </Paper>
+        </Stack>
+
     )
 }
 
@@ -491,7 +534,7 @@ const DiceHistory = (props) => {
     return (
         <Paper elevation={paperElevation}>
             <Toolbar ref={toolbarRef} >
-                <Typography sx={{flexGrow: 1}}>
+                <Typography sx={{ flexGrow: 1 }}>
                     Dice History
                 </Typography>
                 <Tooltip title="Clear Dice History" >
@@ -501,7 +544,7 @@ const DiceHistory = (props) => {
                 </Tooltip>
             </Toolbar>
             <Divider />
-            <List sx={{height: "200px", overflow: "auto" }}>
+            <List sx={{ height: "200px", overflow: "auto" }}>
                 {diceHistory.map((roll, index) => (
                     <ListItem key={index} dense>
                         <ListItemText primary={roll} />
@@ -580,7 +623,7 @@ const SkillDialog = (props) => {
                     fullWidth
                     value={tempSkill.name}
                     onChange={(e) => setTempSkill({ ...tempSkill, name: e.target.value })}
-                    sx = {{ mt: 1 }}
+                    sx={{ mt: 1 }}
                 />
                 <TextField
                     id="skill-description-input"
@@ -595,7 +638,7 @@ const SkillDialog = (props) => {
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose}>Cancel</Button>
-                {props.edit ? <Button onClick={handleEdit}>Save</Button>: <Button onClick={handleAdd}>Add</Button>}
+                {props.edit ? <Button onClick={handleEdit}>Save</Button> : <Button onClick={handleAdd}>Add</Button>}
             </DialogActions>
         </Dialog>
     )
@@ -643,7 +686,7 @@ const SkillAccordion = (props) => {
                     display="hidden"
                 />
                 <IconButton
-                    title = "Edit Skill"
+                    title="Edit Skill"
                     onClick={() => {
                         setEditDialogOpen(true);
                     }}
@@ -651,7 +694,7 @@ const SkillAccordion = (props) => {
                     <Edit />
                 </IconButton>
                 <IconButton
-                    title = "Delete Skill"
+                    title="Delete Skill"
                     onClick={() => {
                         dispatchACData({
                             skills: ACData.skills.filter((s, i) => i !== props.index),
@@ -730,7 +773,7 @@ const InventoryAccordion = (props) => {
                     display="hidden"
                 />
                 <IconButton
-                    title = "Edit Item"
+                    title="Edit Item"
                     onClick={() => {
                         setEditDialogOpen(true);
                     }}
@@ -738,7 +781,7 @@ const InventoryAccordion = (props) => {
                     <Edit />
                 </IconButton>
                 <IconButton
-                    title = "Delete Item"
+                    title="Delete Item"
                     onClick={() => {
                         dispatchACData({
                             inventory: ACData.inventory.filter((s, i) => i !== props.index),
@@ -874,9 +917,12 @@ const Money = (props) => {
                             id="gold-input"
                             type="number"
                             value={ACData.gold ?? 0}
-                            onChange={(e) => { dispatchACData({ gold: 
-                                e.target.value === "" ? e.target.value : parseInt(e.target.value)
-                            }) }}
+                            onChange={(e) => {
+                                dispatchACData({
+                                    gold:
+                                        e.target.value === "" ? e.target.value : parseInt(e.target.value)
+                                })
+                            }}
                             onBlur={(e) => {
                                 if (e.target.value === "") {
                                     dispatchACData({ gold: 0 })
@@ -894,9 +940,12 @@ const Money = (props) => {
                             id="silver-input"
                             type="number"
                             value={ACData.silver ?? 0}
-                            onChange={(e) => { dispatchACData({ silver:
-                                e.target.value === "" ? e.target.value : parseInt(e.target.value)
-                            }) }}
+                            onChange={(e) => {
+                                dispatchACData({
+                                    silver:
+                                        e.target.value === "" ? e.target.value : parseInt(e.target.value)
+                                })
+                            }}
                             onBlur={(e) => {
                                 if (e.target.value === "") {
                                     dispatchACData({ silver: 0 })
@@ -914,9 +963,12 @@ const Money = (props) => {
                             id="copper-input"
                             type="number"
                             value={ACData.copper ?? 0}
-                            onChange={(e) => { dispatchACData({ copper:
-                                e.target.value === "" ? e.target.value : parseInt(e.target.value)
-                            }) }}
+                            onChange={(e) => {
+                                dispatchACData({
+                                    copper:
+                                        e.target.value === "" ? e.target.value : parseInt(e.target.value)
+                                })
+                            }}
                             onBlur={(e) => {
                                 if (e.target.value === "") {
                                     dispatchACData({ copper: 0 })
