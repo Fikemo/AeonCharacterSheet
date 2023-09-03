@@ -2,14 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from "./App.js";
 import './index.css';
-import Events from './Events.js';
 import AeonCharacter from './AeonCharacter.js';
 import reportWebVitals from './reportWebVitals';
 import "./styles/CharacterSheet.css";
-import theme from "./theme.js";
 
 import CssBaseline from "@mui/material/CssBaseline";
-import ThemeProvider from "@mui/material/styles/ThemeProvider";
 
 import defaultCharacter from "./characters/default.json";
 

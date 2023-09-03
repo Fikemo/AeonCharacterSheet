@@ -131,12 +131,22 @@ const CharacterImage = (props) => {
             dispatchACData({ imageURI: null });
         })
 
+        Events.on("characterUploaded", () => {
+            console.log("characterUploaded");
+            if (ACData.imageURI) {
+                setImage(decodeURIComponent(ACData.imageURI));
+            }
+        })
+
         if (ACData.imageURI && !image) {
             setImage(decodeURIComponent(ACData.imageURI));
+        } else {
+            setImage(null);
         }
 
         return () => {
             Events.off("reset");
+            Events.off("characterUploaded");
         }
 
     }, []);
@@ -405,6 +415,7 @@ const UploadButton = (props) => {
                             try {
                                 const character = JSON.parse(event.target.result);
                                 dispatchACData(character);
+                                Events.emit("characterUploaded");
                             } catch (e) {
                                 console.error(e);
                             }
@@ -908,77 +919,71 @@ const Money = (props) => {
     const [ACData, dispatchACData] = useContext(ACContext);
 
     return (
-        <Grid2 container columnSpacing={1}>
-            <Grid2 xs={4}>
-                <Paper elevation={paperElevation}>
-                    <FormControl fullWidth>
-                        <FormHelperText>Gold</FormHelperText>
-                        <TextField
-                            id="gold-input"
-                            type="number"
-                            value={ACData.gold ?? 0}
-                            onChange={(e) => {
-                                dispatchACData({
-                                    gold:
-                                        e.target.value === "" ? e.target.value : parseInt(e.target.value)
-                                })
-                            }}
-                            onBlur={(e) => {
-                                if (e.target.value === "") {
-                                    dispatchACData({ gold: 0 })
-                                }
-                            }}
-                        />
-                    </FormControl>
-                </Paper>
-            </Grid2>
-            <Grid2 xs={4}>
-                <Paper elevation={paperElevation}>
-                    <FormControl fullWidth>
-                        <FormHelperText>Silver</FormHelperText>
-                        <TextField
-                            id="silver-input"
-                            type="number"
-                            value={ACData.silver ?? 0}
-                            onChange={(e) => {
-                                dispatchACData({
-                                    silver:
-                                        e.target.value === "" ? e.target.value : parseInt(e.target.value)
-                                })
-                            }}
-                            onBlur={(e) => {
-                                if (e.target.value === "") {
-                                    dispatchACData({ silver: 0 })
-                                }
-                            }}
-                        />
-                    </FormControl>
-                </Paper>
-            </Grid2>
-            <Grid2 xs={4}>
-                <Paper elevation={paperElevation}>
-                    <FormControl fullWidth>
-                        <FormHelperText>Copper</FormHelperText>
-                        <TextField
-                            id="copper-input"
-                            type="number"
-                            value={ACData.copper ?? 0}
-                            onChange={(e) => {
-                                dispatchACData({
-                                    copper:
-                                        e.target.value === "" ? e.target.value : parseInt(e.target.value)
-                                })
-                            }}
-                            onBlur={(e) => {
-                                if (e.target.value === "") {
-                                    dispatchACData({ copper: 0 })
-                                }
-                            }}
-                        />
-                    </FormControl>
-                </Paper>
-            </Grid2>
-        </Grid2>
+        <Stack direction="row" spacing={1}>
+            <Paper elevation={paperElevation}>
+                <FormControl fullWidth>
+                    <FormHelperText>Gold</FormHelperText>
+                    <TextField
+                        id="gold-input"
+                        type="number"
+                        value={ACData.gold ?? 0}
+                        onChange={(e) => {
+                            dispatchACData({
+                                gold:
+                                    e.target.value === "" ? e.target.value : parseInt(e.target.value)
+                            })
+                        }}
+                        onBlur={(e) => {
+                            if (e.target.value === "") {
+                                dispatchACData({ gold: 0 })
+                            }
+                        }}
+                    />
+                </FormControl>
+            </Paper>
+            <Paper elevation={paperElevation}>
+                <FormControl fullWidth>
+                    <FormHelperText>Silver</FormHelperText>
+                    <TextField
+                        id="silver-input"
+                        type="number"
+                        value={ACData.silver ?? 0}
+                        onChange={(e) => {
+                            dispatchACData({
+                                silver:
+                                    e.target.value === "" ? e.target.value : parseInt(e.target.value)
+                            })
+                        }}
+                        onBlur={(e) => {
+                            if (e.target.value === "") {
+                                dispatchACData({ silver: 0 })
+                            }
+                        }}
+                    />
+                </FormControl>
+            </Paper>
+            <Paper elevation={paperElevation}>
+                <FormControl fullWidth>
+                    <FormHelperText>Copper</FormHelperText>
+                    <TextField
+                        id="copper-input"
+                        type="number"
+                        value={ACData.copper ?? 0}
+                        onChange={(e) => {
+                            dispatchACData({
+                                copper:
+                                    e.target.value === "" ? e.target.value : parseInt(e.target.value)
+                            })
+                        }}
+                        onBlur={(e) => {
+                            if (e.target.value === "") {
+                                dispatchACData({ copper: 0 })
+                            }
+                        }}
+                    />
+                </FormControl>
+            </Paper>
+        </Stack>
     )
 }
 
