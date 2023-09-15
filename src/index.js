@@ -10,9 +10,13 @@ import CssBaseline from "@mui/material/CssBaseline";
 
 import defaultCharacter from "./characters/default.json";
 
+import DiceScene from './DiceScene.js';
+
 const ACData = JSON.parse(localStorage.getItem('ACData')) || defaultCharacter;
 const AC = new AeonCharacter(ACData);
 window.AC = AC;
+
+window.scene = new DiceScene();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

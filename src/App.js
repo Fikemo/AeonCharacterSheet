@@ -503,6 +503,7 @@ const DieButton = (props) => {
                     let roll = Math.floor(Math.random() * props.sides) + 1;
                     roll = `${props.title}: ${roll}`;
                     setDiceHistory([roll, ...diceHistory]);
+                    props.onClick?.();
                 }}
             >
                 <img src={props.icon} alt={props.title} height={24} width={24} />
@@ -520,15 +521,25 @@ const IconButtonRow = (props) => {
                 <DieButton title="D4" sides={4} icon={d4Icon} />
                 <DieButton title="D6" sides={6} icon={d6Icon} />
                 <DieButton title="D8" sides={8} icon={d8Icon} />
-                <DieButton title="D10" sides={10} icon={d10Icon} />
+                <DieButton title="D10" sides={10} icon={d10Icon}
+                onClick={()=>window.scene?.spawnPhysicalPentagonalTrapezohedron()}/>
                 <DieButton title="D12" sides={12} icon={d12Icon} />
-                <DieButton title="D20" sides={20} icon={d20Icon} />
+                <DieButton title="D20" sides={20} icon={d20Icon}
+                onClick={()=>window.scene?.spawnPhysicalIcosahedron()}/>
 
                 <Divider orientation="vertical" flexItem />
 
                 <UploadButton />
                 <DownloadButton />
                 <ResetButton />
+
+                <Button
+                    onClick={() => {
+                        window.scene?.spawnPhysicalCube();
+                    }}
+                >
+                    Test
+                </Button>
             </Stack>
         </Paper>
     )
