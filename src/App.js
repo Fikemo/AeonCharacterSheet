@@ -518,12 +518,16 @@ const IconButtonRow = (props) => {
     return (
         <Paper elevation={paperElevation}>
             <Stack direction="row" spacing={1}>
-                <DieButton title="D4" sides={4} icon={d4Icon} />
-                <DieButton title="D6" sides={6} icon={d6Icon} />
-                <DieButton title="D8" sides={8} icon={d8Icon} />
+                <DieButton title="D4" sides={4} icon={d4Icon}
+                onClick={()=>window.scene?.spawnPhysicalTetrahedron()}/>
+                <DieButton title="D6" sides={6} icon={d6Icon}
+                onClick={()=>window.scene?.spawnPhysicalCube()}/>
+                <DieButton title="D8" sides={8} icon={d8Icon}
+                onClick={()=>window.scene?.spawnPhysicalOctahedron()}/>
                 <DieButton title="D10" sides={10} icon={d10Icon}
                 onClick={()=>window.scene?.spawnPhysicalPentagonalTrapezohedron()}/>
-                <DieButton title="D12" sides={12} icon={d12Icon} />
+                <DieButton title="D12" sides={12} icon={d12Icon}
+                onClick={()=>window.scene?.spawnPhysicalDodecahedron()}/>
                 <DieButton title="D20" sides={20} icon={d20Icon}
                 onClick={()=>window.scene?.spawnPhysicalIcosahedron()}/>
 
@@ -535,7 +539,7 @@ const IconButtonRow = (props) => {
 
                 <Button
                     onClick={() => {
-                        window.scene?.spawnPhysicalCube();
+                        console.log("test");
                     }}
                 >
                     Test
