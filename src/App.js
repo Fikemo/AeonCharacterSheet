@@ -521,9 +521,9 @@ const IconButtonRow = (props) => {
                 <DieButton title="D4" sides={4} icon={d4Icon}
                 onClick={()=>window.scene?.spawnD4FromModel((value)=>{setDiceHistory([`D4: ${value}`, ... diceHistory])})}/>
                 <DieButton title="D6" sides={6} icon={d6Icon}
-                onClick={()=>window.scene?.spawnPhysicalCube()}/>
+                onClick={()=>window.scene?.spawnD6FromModel((value)=>{setDiceHistory([`D6: ${value}`, ... diceHistory])})}/>
                 <DieButton title="D8" sides={8} icon={d8Icon}
-                onClick={()=>window.scene?.spawnPhysicalOctahedron()}/>
+                onClick={()=>window.scene?.spawnD8FromModel((value)=>{setDiceHistory([`D8: ${value}`, ... diceHistory])})}/>
                 <DieButton title="D10" sides={10} icon={d10Icon}
                 onClick={()=>window.scene?.spawnD10FromModel((value)=>{setDiceHistory([`D10: ${value}`, ... diceHistory])})}/>
                 <DieButton title="D12" sides={12} icon={d12Icon}

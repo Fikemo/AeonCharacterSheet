@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { threeToCannon, ShapeType } from 'three-to-cannon';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 import * as CANNON from 'cannon-es';
@@ -15,7 +17,7 @@ const loadModels = () => {
     const d4URL = new URL('./assets/d4.glb', import.meta.url);
     loader.load(
         // resource URL
-        d4URL+'',
+        d4URL + '',
         // called when the resource is loaded
         (gltf) => {
             models.d4 = gltf.scene.children[0];
@@ -31,10 +33,78 @@ const loadModels = () => {
     const d4LODURL = new URL('./assets/d4LOD.glb', import.meta.url);
     loader.load(
         // resource URL
-        d4LODURL+'',
+        d4LODURL + '',
         // called when the resource is loaded
         (object) => {
             models.d4LOD = object.scene.children[0];
+            console.log(object);
+        },
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        },
+        (error) => {
+            console.error(error)
+        }
+    );
+
+    //d6
+    const d6URL = new URL('./assets/d6.glb', import.meta.url);
+    loader.load(
+        // resource URL
+        d6URL + '',
+        // called when the resource is loaded
+        (gltf) => {
+            models.d6 = gltf.scene.children[0];
+        },
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        },
+        (error) => {
+            console.error(error)
+        }
+    );
+
+    const d6LODURL = new URL('./assets/d6LOD.glb', import.meta.url);
+    loader.load(
+        // resource URL
+        d6LODURL + '',
+        // called when the resource is loaded
+        (object) => {
+            models.d6LOD = object.scene.children[0];
+            console.log(object);
+        },
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        },
+        (error) => {
+            console.error(error)
+        }
+    );
+
+    //d8
+    const d8URL = new URL('./assets/d8.glb', import.meta.url);
+    loader.load(
+        // resource URL
+        d8URL + '',
+        // called when the resource is loaded
+        (gltf) => {
+            models.d8 = gltf.scene.children[0];
+        },
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        },
+        (error) => {
+            console.error(error)
+        }
+    );
+
+    const d8LODURL = new URL('./assets/d8LOD.glb', import.meta.url);
+    loader.load(
+        // resource URL
+        d8LODURL + '',
+        // called when the resource is loaded
+        (object) => {
+            models.d8LOD = object.scene.children[0];
             console.log(object);
         },
         (xhr) => {
@@ -49,7 +119,7 @@ const loadModels = () => {
     const d10URL = new URL('./assets/d10.glb', import.meta.url);
     loader.load(
         // resource URL
-        d10URL+'',
+        d10URL + '',
         // called when the resource is loaded
         (gltf) => {
             models.d10 = gltf.scene.children[0];
@@ -65,7 +135,7 @@ const loadModels = () => {
     const d10LODURL = new URL('./assets/d10LOD.glb', import.meta.url);
     loader.load(
         // resource URL
-        d10LODURL+'',
+        d10LODURL + '',
         // called when the resource is loaded
         (object) => {
             models.d10LOD = object.scene.children[0];
@@ -83,7 +153,7 @@ const loadModels = () => {
     const d12URL = new URL('./assets/d12.glb', import.meta.url);
     loader.load(
         // resource URL
-        d12URL+'',
+        d12URL + '',
         // called when the resource is loaded
         (gltf) => {
             models.d12 = gltf.scene.children[0];
@@ -99,7 +169,7 @@ const loadModels = () => {
     const d12LODURL = new URL('./assets/d12LOD.glb', import.meta.url);
     loader.load(
         // resource URL
-        d12LODURL+'',
+        d12LODURL + '',
         // called when the resource is loaded
         (object) => {
             models.d12LOD = object.scene.children[0];
@@ -117,7 +187,7 @@ const loadModels = () => {
     const d20URL = new URL('./assets/d20.glb', import.meta.url);
     loader.load(
         // resource URL
-        d20URL+'',
+        d20URL + '',
         // called when the resource is loaded
         (gltf) => {
             models.d20 = gltf.scene.children[0];
@@ -133,7 +203,7 @@ const loadModels = () => {
     const d20LODURL = new URL('./assets/d20LOD.glb', import.meta.url);
     loader.load(
         // resource URL
-        d20LODURL+'',
+        d20LODURL + '',
         // called when the resource is loaded
         (object) => {
             models.d20LOD = object.scene.children[0];
@@ -172,6 +242,10 @@ export default class DiceScene {
         this.renderer.domElement.style.top = 0;
         this.renderer.domElement.style.left = 0;
         this.renderer.domElement.style.pointerEvents = 'none';
+
+        // Add orbit controls
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.update();
 
         // Add ambient light
         const ambientLight = new THREE.AmbientLight(0xffffff, 1);
@@ -297,12 +371,14 @@ export default class DiceScene {
             // If the die has stopped moving, set it to static
             if (die.body.velocity.length() < 0.01 && die.body.angularVelocity.length() < 0.01) {
                 if (!die.stoppedMoving) {
-                    
+
                 }
 
                 die.stoppedMoving = true;
             }
         }
+
+        this.controls.update();
 
         this.renderer.render(this.scene, this.camera);
     }
@@ -379,7 +455,7 @@ export default class DiceScene {
 
         this.spawnPhysicalDie(tetrahedronMesh);
     }
-    
+
     spawnPhysicalCube() {
         if (this.dice.length > 10) return;
 
@@ -559,15 +635,16 @@ export default class DiceScene {
         d4.castShadow = true;
         const d4LOD = models.d4LOD.clone();
 
-        const shapeLOD = this.createShapeFromGeometry(d4LOD.geometry);
+        // const shapeLOD = this.createShapeFromGeometry(d4LOD.geometry);
+        const shapeLOD = threeToCannon(d4LOD, { type: ShapeType.HULL }).shape;
 
         const bodyLOD = new CANNON.Body({
             mass: diceMass,
             shape: shapeLOD,
             sleepSpeedLimit: 1.0,
             sleepTimeLimit: 0.5,
-            collisionFilterGroup: 2,
-            collisionFilterMask: 1,
+            // collisionFilterGroup: 2,
+            // collisionFilterMask: 1,
         });
 
         bodyLOD.addEventListener('sleep', (e) => {
@@ -617,6 +694,142 @@ export default class DiceScene {
         this.spawnPhysicalDie(d4);
     }
 
+    spawnD6FromModel(callback) {
+        if (this.dice.length > 10) return;
+
+        const d6 = models.d6.clone();
+        d6.castShadow = true;
+        const d6LOD = models.d6LOD.clone();
+
+        // const shapeLOD = this.createShapeFromGeometry(d6LOD.geometry);
+        const shapeLOD = threeToCannon(d6LOD, { type: ShapeType.HULL }).shape;
+
+        const bodyLOD = new CANNON.Body({
+            mass: diceMass,
+            shape: shapeLOD,
+            sleepSpeedLimit: 1.0,
+            sleepTimeLimit: 0.5,
+            // collisionFilterGroup: 2,
+            // collisionFilterMask: 1,
+        });
+
+        bodyLOD.addEventListener('sleep', (e) => {
+            const indexMatchUps = [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ]
+
+            e.target.shapes[0].computeWorldFaceNormals(e.target.quaternion);
+            // Find the world face normal that is pointed the most up
+            const worldFaceNormals = e.target.shapes[0].worldFaceNormals;
+            let maxDot = 0;
+            let maxFace = null;
+            let maxIndex = 0;
+            for (let i = 0; i < worldFaceNormals.length; ++i) {
+                const face = worldFaceNormals[i];
+                const dot = face.dot(new CANNON.Vec3(0, 1, 0));
+                if (dot > maxDot) {
+                    maxDot = dot;
+                    maxFace = face;
+                    maxIndex = i;
+                }
+            }
+            console.log(maxFace, maxIndex, indexMatchUps[maxIndex]);
+
+            if (callback) {
+                callback(indexMatchUps[maxIndex]);
+            }
+
+            setTimeout(() => {
+                // Remove and delete the icosahedron
+                this.scene.remove(d6);
+                this.physicsWorld.removeBody(bodyLOD);
+                this.dice.splice(this.dice.indexOf(d6), 1);
+            }, 1000);
+        });
+
+        // Link the visual mesh to the physical body
+        d6.body = bodyLOD;
+        // Link the physical body to the visual mesh
+        bodyLOD.visualref = d6;
+
+        console.log(d6);
+
+        this.spawnPhysicalDie(d6);
+    }
+
+    spawnD8FromModel(callback) {
+        if (this.dice.length > 10) return;
+
+        const d8 = models.d8.clone();
+        d8.castShadow = true;
+        const d8LOD = models.d8LOD.clone();
+
+        // const shapeLOD = this.createShapeFromGeometry(d8LOD.geometry);
+        const shapeLOD = threeToCannon(d8LOD, { type: ShapeType.HULL }).shape;
+
+        const bodyLOD = new CANNON.Body({
+            mass: diceMass,
+            shape: shapeLOD,
+            sleepSpeedLimit: 1.0,
+            sleepTimeLimit: 0.5,
+        });
+
+        bodyLOD.addEventListener('sleep', (e) => {
+            const indexMatchUps = [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+            ]
+
+            e.target.shapes[0].computeWorldFaceNormals(e.target.quaternion);
+            // Find the world face normal that is pointed the most up
+            const worldFaceNormals = e.target.shapes[0].worldFaceNormals;
+            let maxDot = 0;
+            let maxFace = null;
+            let maxIndex = 0;
+            for (let i = 0; i < worldFaceNormals.length; ++i) {
+                const face = worldFaceNormals[i];
+                const dot = face.dot(new CANNON.Vec3(0, 1, 0));
+                if (dot > maxDot) {
+                    maxDot = dot;
+                    maxFace = face;
+                    maxIndex = i;
+                }
+            }
+            console.log(maxFace, maxIndex, indexMatchUps[maxIndex]);
+
+            if (callback) {
+                callback(indexMatchUps[maxIndex]);
+            }
+
+            setTimeout(() => {
+                // Remove and delete the icosahedron
+                this.scene.remove(d8);
+                this.physicsWorld.removeBody(bodyLOD);
+                this.dice.splice(this.dice.indexOf(d8), 1);
+            }, 1000);
+        });
+
+        // Link the visual mesh to the physical body
+        d8.body = bodyLOD;
+        // Link the physical body to the visual mesh
+        bodyLOD.visualref = d8;
+
+        console.log(d8);
+
+        this.spawnPhysicalDie(d8);
+    }
+
     spawnD10FromModel(callback) {
         if (this.dice.length > 10) return;
 
@@ -624,15 +837,16 @@ export default class DiceScene {
         d10.castShadow = true;
         const d10LOD = models.d10LOD.clone();
 
-        const shapeLOD = this.createShapeFromGeometry(d10LOD.geometry);
+        // const shapeLOD = this.createShapeFromGeometry(d10LOD.geometry);
+        const shapeLOD = threeToCannon(d10LOD, { type: ShapeType.HULL }).shape;
 
         const bodyLOD = new CANNON.Body({
             mass: diceMass,
             shape: shapeLOD,
             sleepSpeedLimit: 1.0,
             sleepTimeLimit: 0.5,
-            collisionFilterGroup: 2,
-            collisionFilterMask: 1,
+            // collisionFilterGroup: 2,
+            // collisionFilterMask: 1,
         });
 
         bodyLOD.addEventListener('sleep', (e) => {
@@ -695,15 +909,14 @@ export default class DiceScene {
         d12.castShadow = true;
         const d12LOD = models.d12LOD.clone();
 
-        const shapeLOD = this.createShapeFromGeometry(d12LOD.geometry);
+        // const shapeLOD = this.createShapeFromGeometry(d12LOD.geometry);
+        const shapeLOD = threeToCannon(d12LOD, { type: ShapeType.HULL }).shape;
 
         const bodyLOD = new CANNON.Body({
             mass: diceMass,
             shape: shapeLOD,
             sleepSpeedLimit: 1.0,
             sleepTimeLimit: 0.5,
-            collisionFilterGroup: 2,
-            collisionFilterMask: 1,
         });
 
         bodyLOD.addEventListener('sleep', (e) => {
@@ -770,7 +983,8 @@ export default class DiceScene {
 
         // const shape = this.createShapeFromGeometry(d20.geometry);
         // const shape = new CANNON.Box(new CANNON.Vec3(1, 1, 1));
-        const shapeLOD = this.createShapeFromGeometry(d20LOD.geometry);
+        // const shapeLOD = this.createShapeFromGeometry(d20LOD.geometry);
+        const shapeLOD = threeToCannon(d20LOD, { type: ShapeType.HULL }).shape;
         // const shapeLOD = new CANNON.Sphere(1);
 
         // const body = new CANNON.Body({
@@ -790,48 +1004,25 @@ export default class DiceScene {
         });
 
         bodyLOD.addEventListener('sleep', (e) => {
-            const indexMatchUps = [
-                12,
-                11,
-                13,
-                14,
-                15,
-                4,
-                2,
-                16,
-                18,
-                20,
-                3,
-                1,
-                17,
-                19,
-                5,
-                7,
-                6,
-                10,
-                9,
-                8
-            ]
+            const midPoints = this.generateIcosaPoints();
 
-            e.target.shapes[0].computeWorldFaceNormals(e.target.quaternion);
-            // Find the world face normal that is pointed the most up
-            const worldFaceNormals = e.target.shapes[0].worldFaceNormals;
-            let maxDot = 0;
-            let maxFace = null;
+            bodyLOD.visualref.updateMatrixWorld();
+
+            const maxPoint = new THREE.Vector3();
             let maxIndex = 0;
-            for (let i = 0; i < worldFaceNormals.length; ++i) {
-                const face = worldFaceNormals[i];
-                const dot = face.dot(new CANNON.Vec3(0, 1, 0));
-                if (dot > maxDot) {
-                    maxDot = dot;
-                    maxFace = face;
+            for (let i = 0; i < midPoints.length; ++i) {
+                const midpoint = midPoints[i];
+                midpoint.applyMatrix4(bodyLOD.visualref.matrixWorld);
+                console.log(midpoint);
+
+                if (midpoint.y > maxPoint.y) {
+                    maxPoint.copy(midpoint);
                     maxIndex = i;
                 }
             }
-            console.log(maxFace, maxIndex, indexMatchUps[maxIndex]);
 
             if (callback) {
-                callback(indexMatchUps[maxIndex]);
+                callback(maxIndex + 1);
             }
 
             setTimeout(() => {
@@ -860,7 +1051,7 @@ export default class DiceScene {
         const url = new URL('./assets/d20.glb', import.meta.url)
         loader.load(
             // resource URL
-            url+'',
+            url + '',
             // called when the resource is loaded
             (gltf) => {
                 console.log(gltf);
@@ -894,41 +1085,104 @@ export default class DiceScene {
             }
         );
 
-    //     const loader = new FBXLoader();
+        //     const loader = new FBXLoader();
 
-    //     // Create a material that uses a texture
-    //     const textureURL = new URL('./assets/rpg-dice-set-pbr-game-ready-model/textures/RPGDiceSet_d.png', import.meta.url);
-    //     const normalURL = new URL('./assets/rpg-dice-set-pbr-game-ready-model/textures/RPGDiceSet_n.png', import.meta.url);
-    //     const texture = new THREE.TextureLoader().load(textureURL+'');
-    //     const normalMap = new THREE.TextureLoader().load(normalURL+'');
-    //     const material = new THREE.MeshLambertMaterial({
-    //         map: texture,
-    //         normalMap: normalMap,
-    //     });
+        //     // Create a material that uses a texture
+        //     const textureURL = new URL('./assets/rpg-dice-set-pbr-game-ready-model/textures/RPGDiceSet_d.png', import.meta.url);
+        //     const normalURL = new URL('./assets/rpg-dice-set-pbr-game-ready-model/textures/RPGDiceSet_n.png', import.meta.url);
+        //     const texture = new THREE.TextureLoader().load(textureURL+'');
+        //     const normalMap = new THREE.TextureLoader().load(normalURL+'');
+        //     const material = new THREE.MeshLambertMaterial({
+        //         map: texture,
+        //         normalMap: normalMap,
+        //     });
 
-    //     const url = new URL('./assets/rpg-dice-set-pbr-game-ready-model/source/sm_DiceSet_02.fbx', import.meta.url);
-    //     loader.load(
-    //         // resource URL
-    //         url+'',
-    //         // called when the resource is loaded
-    //         (object) => {
-    //             console.log(object);
-    //             object.traverse((child) => {
-    //                 if (child instanceof THREE.Mesh) {
-    //                     child.material = material;
-    //                     child.castShadow = true;
-    //                 }
-    //             })
+        //     const url = new URL('./assets/rpg-dice-set-pbr-game-ready-model/source/sm_DiceSet_02.fbx', import.meta.url);
+        //     loader.load(
+        //         // resource URL
+        //         url+'',
+        //         // called when the resource is loaded
+        //         (object) => {
+        //             console.log(object);
+        //             object.traverse((child) => {
+        //                 if (child instanceof THREE.Mesh) {
+        //                     child.material = material;
+        //                     child.castShadow = true;
+        //                 }
+        //             })
 
 
-    //             window.scene?.scene?.add(object);
-    //         },
-    //         (xhr) => {
-    //             console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-    //         },
-    //         (error) => {
-    //             console.error(error)
-    //         }
-    //     );
+        //             window.scene?.scene?.add(object);
+        //         },
+        //         (xhr) => {
+        //             console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        //         },
+        //         (error) => {
+        //             console.error(error)
+        //         }
+        //     );
+    }
+
+    generateIcosaPoints() {
+        const midpoints = [];
+
+        // Define the vertices of an icosahedron
+        const t = (1.0 + Math.sqrt(5.0)) / 2.0;
+
+        const vertices = [
+            new THREE.Vector3(-1, t, 0),
+            new THREE.Vector3(1, t, 0),
+            new THREE.Vector3(-1, -t, 0),
+            new THREE.Vector3(1, -t, 0),
+            new THREE.Vector3(0, -1, t),
+            new THREE.Vector3(0, 1, t),
+            new THREE.Vector3(0, -1, -t),
+            new THREE.Vector3(0, 1, -t),
+            new THREE.Vector3(t, 0, -1),
+            new THREE.Vector3(t, 0, 1),
+            new THREE.Vector3(-t, 0, -1),
+            new THREE.Vector3(-t, 0, 1)
+        ];
+
+        // Define the faces of an icosahedron
+        const faces = [
+            [0, 11, 5],
+            [0, 5, 1],
+            [0, 1, 7],
+            [0, 7, 10],
+            [0, 10, 11],
+            [1, 5, 9],
+            [5, 11, 4],
+            [11, 10, 2],
+            [10, 7, 6],
+            [7, 1, 8],
+            [3, 9, 4],
+            [3, 4, 2],
+            [3, 2, 6],
+            [3, 6, 8],
+            [3, 8, 9],
+            [4, 9, 5],
+            [2, 4, 11],
+            [6, 2, 10],
+            [8, 6, 7],
+            [9, 8, 1]
+        ];
+
+        // Calculate and store the midpoint for each face
+        for (const face of faces) {
+            const a = vertices[face[0]];
+            const b = vertices[face[1]];
+            const c = vertices[face[2]];
+
+            const midpoint = new THREE.Vector3(
+                (a.x + b.x + c.x) / 3,
+                (a.y + b.y + c.y) / 3,
+                (a.z + b.z + c.z) / 3
+            );
+
+            midpoints.push(midpoint);
+        }
+
+        return midpoints;
     }
 }
