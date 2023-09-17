@@ -500,9 +500,9 @@ const DieButton = (props) => {
         <Tooltip title={props.title} >
             <IconButton
                 onClick={() => {
-                    let roll = Math.floor(Math.random() * props.sides) + 1;
-                    roll = `${props.title}: ${roll}`;
-                    setDiceHistory([roll, ...diceHistory]);
+                    // let roll = Math.floor(Math.random() * props.sides) + 1;
+                    // roll = `${props.title}: ${roll}`;
+                    // setDiceHistory([roll, ...diceHistory]);
                     props.onClick?.();
                 }}
             >
@@ -519,17 +519,17 @@ const IconButtonRow = (props) => {
         <Paper elevation={paperElevation}>
             <Stack direction="row" spacing={1}>
                 <DieButton title="D4" sides={4} icon={d4Icon}
-                onClick={()=>window.scene?.spawnPhysicalTetrahedron()}/>
+                onClick={()=>window.scene?.spawnD4FromModel((value)=>{setDiceHistory([`D4: ${value}`, ... diceHistory])})}/>
                 <DieButton title="D6" sides={6} icon={d6Icon}
                 onClick={()=>window.scene?.spawnPhysicalCube()}/>
                 <DieButton title="D8" sides={8} icon={d8Icon}
                 onClick={()=>window.scene?.spawnPhysicalOctahedron()}/>
                 <DieButton title="D10" sides={10} icon={d10Icon}
-                onClick={()=>window.scene?.spawnPhysicalPentagonalTrapezohedron()}/>
+                onClick={()=>window.scene?.spawnD10FromModel((value)=>{setDiceHistory([`D10: ${value}`, ... diceHistory])})}/>
                 <DieButton title="D12" sides={12} icon={d12Icon}
-                onClick={()=>window.scene?.spawnPhysicalDodecahedron()}/>
+                onClick={()=>window.scene?.spawnD12FromModel((value)=>{setDiceHistory([`D12: ${value}`, ... diceHistory])})}/>
                 <DieButton title="D20" sides={20} icon={d20Icon}
-                onClick={()=>window.scene?.spawnPhysicalIcosahedron()}/>
+                onClick={()=>window.scene?.spawnD20FromModel((value)=>{setDiceHistory([`D20: ${value}`, ...diceHistory])})}/>
 
                 <Divider orientation="vertical" flexItem />
 
@@ -540,6 +540,7 @@ const IconButtonRow = (props) => {
                 <Button
                     onClick={() => {
                         console.log("test");
+                        window.scene?.spawnD20FromModel();
                     }}
                 >
                     Test

@@ -1,0 +1,8 @@
+Model Information:
+* title:	RPG dice set - PBR - Game-ready model
+* source:	https://sketchfab.com/3d-models/rpg-dice-set-pbr-game-ready-model-962812cf911545d5a47edea469cfc54e
+* author:	miloszgierczak (https://sketchfab.com/miloszgierczak)
+
+Model License:
+* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
+* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works

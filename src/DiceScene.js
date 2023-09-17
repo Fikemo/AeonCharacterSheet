@@ -1,7 +1,154 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 import * as CANNON from 'cannon-es';
 import CannonDebugger from 'cannon-es-debugger';
+
+const diceMass = 100;
+const gravity = -80;
+const models = {}
+
+const loadModels = () => {
+    const loader = new GLTFLoader();
+
+    //d4
+    const d4URL = new URL('./assets/d4.glb', import.meta.url);
+    loader.load(
+        // resource URL
+        d4URL+'',
+        // called when the resource is loaded
+        (gltf) => {
+            models.d4 = gltf.scene.children[0];
+        },
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        },
+        (error) => {
+            console.error(error)
+        }
+    );
+
+    const d4LODURL = new URL('./assets/d4LOD.glb', import.meta.url);
+    loader.load(
+        // resource URL
+        d4LODURL+'',
+        // called when the resource is loaded
+        (object) => {
+            models.d4LOD = object.scene.children[0];
+            console.log(object);
+        },
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        },
+        (error) => {
+            console.error(error)
+        }
+    );
+
+    //d10
+    const d10URL = new URL('./assets/d10.glb', import.meta.url);
+    loader.load(
+        // resource URL
+        d10URL+'',
+        // called when the resource is loaded
+        (gltf) => {
+            models.d10 = gltf.scene.children[0];
+        },
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        },
+        (error) => {
+            console.error(error)
+        }
+    );
+
+    const d10LODURL = new URL('./assets/d10LOD.glb', import.meta.url);
+    loader.load(
+        // resource URL
+        d10LODURL+'',
+        // called when the resource is loaded
+        (object) => {
+            models.d10LOD = object.scene.children[0];
+            console.log(object);
+        },
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        },
+        (error) => {
+            console.error(error)
+        }
+    );
+
+    //d12
+    const d12URL = new URL('./assets/d12.glb', import.meta.url);
+    loader.load(
+        // resource URL
+        d12URL+'',
+        // called when the resource is loaded
+        (gltf) => {
+            models.d12 = gltf.scene.children[0];
+        },
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        },
+        (error) => {
+            console.error(error)
+        }
+    );
+
+    const d12LODURL = new URL('./assets/d12LOD.glb', import.meta.url);
+    loader.load(
+        // resource URL
+        d12LODURL+'',
+        // called when the resource is loaded
+        (object) => {
+            models.d12LOD = object.scene.children[0];
+            console.log(object);
+        },
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        },
+        (error) => {
+            console.error(error)
+        }
+    );
+
+    //d20
+    const d20URL = new URL('./assets/d20.glb', import.meta.url);
+    loader.load(
+        // resource URL
+        d20URL+'',
+        // called when the resource is loaded
+        (gltf) => {
+            models.d20 = gltf.scene.children[0];
+        },
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        },
+        (error) => {
+            console.error(error)
+        }
+    );
+
+    const d20LODURL = new URL('./assets/d20LOD.glb', import.meta.url);
+    loader.load(
+        // resource URL
+        d20LODURL+'',
+        // called when the resource is loaded
+        (object) => {
+            models.d20LOD = object.scene.children[0];
+            console.log(object);
+        },
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        },
+        (error) => {
+            console.error(error)
+        }
+    );
+}
+
+loadModels();
 
 export default class DiceScene {
     constructor() {
@@ -9,6 +156,7 @@ export default class DiceScene {
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.camera.position.y = 10;
         this.camera.rotation.x = -Math.PI / 2;
+
         this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setClearColor(0x000000, 0);
@@ -26,10 +174,10 @@ export default class DiceScene {
         this.renderer.domElement.style.pointerEvents = 'none';
 
         // Add ambient light
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 
         // Add directional light
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        const directionalLight = new THREE.DirectionalLight();
         directionalLight.position.set(-2, 5, -1);
         directionalLight.lookAt(0, 0, 0);
         directionalLight.castShadow = true;
@@ -48,21 +196,21 @@ export default class DiceScene {
 
         // Create a physics world
         this.physicsWorld = new CANNON.World({
-            gravity: new CANNON.Vec3(0, -9.82, 0),
-            broadphase: new CANNON.NaiveBroadphase(),
+            gravity: new CANNON.Vec3(0, gravity, 0),
             allowSleep: true,
         });
 
         // Create a ground plane
         const groundBody = new CANNON.Body({
             type: CANNON.Body.STATIC,
-            // infinite geometric plane
             shape: new CANNON.Plane(),
+            material: new CANNON.Material({ friction: 10 }),
         })
         // rotate ground body by 90 degrees
         groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
+        // increase the friction of the ground plane
         this.physicsWorld.addBody(groundBody);
-        // this.cannonDebugger = new CannonDebugger(this.scene, this.physicsWorld, { color: 0x0ff0000 });
+        this.cannonDebugger = new CannonDebugger(this.scene, this.physicsWorld, { color: 0x0ff0000 });
 
         // create a visual ground plane
         const groundGeometry = new THREE.PlaneGeometry(10, 10);
@@ -72,6 +220,10 @@ export default class DiceScene {
         groundMesh.receiveShadow = true;
         groundMesh.rotation.x = -Math.PI / 2;
         this.scene.add(groundMesh);
+
+        // Scale the plane to fill the screen
+        const scale = window.innerHeight / 10;
+        groundMesh.scale.set(scale, scale, scale);
 
         // Four wall planes
         // const rightWallBody = new CANNON.Body({
@@ -179,7 +331,12 @@ export default class DiceScene {
         const body = mesh.body;
         body.position.set(0, 5, 0);
 
-        // Give the icosahedron a random spin and velocity
+        // Give the die a random rotation
+        const x = Math.random() * 2 * Math.PI;
+        const y = Math.random() * 2 * Math.PI;
+        const z = Math.random() * 2 * Math.PI;
+        body.quaternion.setFromEuler(x, y, z);
+        // Give the die a random spin and velocity
         body.angularVelocity.set((Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20);
         // body.velocity.set((Math.random() - 0.5) * 20, 0, (Math.random() - 0.5) * 20);
 
@@ -187,12 +344,12 @@ export default class DiceScene {
         this.scene.add(mesh);
         this.physicsWorld.addBody(body);
 
-        setTimeout(() => {
-            // Remove and delete the icosahedron
-            this.scene.remove(mesh);
-            this.physicsWorld.removeBody(body);
-            this.dice.splice(this.dice.indexOf(mesh), 1);
-        }, 5000);
+        // setTimeout(() => {
+        //     // Remove and delete the icosahedron
+        //     this.scene.remove(mesh);
+        //     this.physicsWorld.removeBody(body);
+        //     this.dice.splice(this.dice.indexOf(mesh), 1);
+        // }, 5000);
     }
 
     spawnPhysicalTetrahedron() {
@@ -209,7 +366,7 @@ export default class DiceScene {
         const tetraShape = this.createShapeFromGeometry(geometry);
 
         const tetrahedronBody = new CANNON.Body({
-            mass: 5,
+            mass: diceMass,
             shape: tetraShape,
             collisionFilterGroup: 2,
             collisionFilterMask: 1,
@@ -228,7 +385,7 @@ export default class DiceScene {
 
         // Create a physical cube and set it at y = 10
         const cubeBody = new CANNON.Body({
-            mass: 5,
+            mass: diceMass,
             shape: new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5)),
             collisionFilterGroup: 2,
             collisionFilterMask: 1,
@@ -262,7 +419,7 @@ export default class DiceScene {
         const octaShape = this.createShapeFromGeometry(geometry);
 
         const octahedronBody = new CANNON.Body({
-            mass: 5,
+            mass: diceMass,
             shape: octaShape,
             collisionFilterGroup: 2,
             collisionFilterMask: 1,
@@ -290,7 +447,7 @@ export default class DiceScene {
         const dodecaShape = this.createShapeFromGeometry(geometry);
 
         const dodecahedronBody = new CANNON.Body({
-            mass: 5,
+            mass: diceMass,
             shape: dodecaShape,
             collisionFilterGroup: 2,
             collisionFilterMask: 1,
@@ -318,7 +475,7 @@ export default class DiceScene {
         const icosaShape = this.createShapeFromGeometry(geometry);
 
         const icosahedronBody = new CANNON.Body({
-            mass: 10,
+            mass: diceMass,
             shape: icosaShape,
             collisionFilterGroup: 2,
             collisionFilterMask: 1,
@@ -378,7 +535,7 @@ export default class DiceScene {
         const shape = this.createShapeFromGeometry(geometry);
 
         const body = new CANNON.Body({
-            mass: 5,
+            mass: diceMass,
             shape: shape,
             collisionFilterGroup: 2,
             collisionFilterMask: 1,
@@ -393,5 +550,385 @@ export default class DiceScene {
         console.log(mesh);
 
         this.spawnPhysicalDie(mesh);
+    }
+
+    spawnD4FromModel(callback) {
+        if (this.dice.length > 10) return;
+
+        const d4 = models.d4.clone();
+        d4.castShadow = true;
+        const d4LOD = models.d4LOD.clone();
+
+        const shapeLOD = this.createShapeFromGeometry(d4LOD.geometry);
+
+        const bodyLOD = new CANNON.Body({
+            mass: diceMass,
+            shape: shapeLOD,
+            sleepSpeedLimit: 1.0,
+            sleepTimeLimit: 0.5,
+            collisionFilterGroup: 2,
+            collisionFilterMask: 1,
+        });
+
+        bodyLOD.addEventListener('sleep', (e) => {
+            const indexMatchUps = [
+                1,
+                2,
+                3,
+                4
+            ]
+
+            e.target.shapes[0].computeWorldFaceNormals(e.target.quaternion);
+            // Find the world face normal that is pointed most down
+            const worldFaceNormals = e.target.shapes[0].worldFaceNormals;
+            let maxDot = 0;
+            let maxFace = null;
+            let maxIndex = 0;
+            for (let i = 0; i < worldFaceNormals.length; ++i) {
+                const face = worldFaceNormals[i];
+                const dot = face.dot(new CANNON.Vec3(0, -1, 0));
+                if (dot > maxDot) {
+                    maxDot = dot;
+                    maxFace = face;
+                    maxIndex = i;
+                }
+            }
+            console.log(maxFace, maxIndex, indexMatchUps[maxIndex]);
+
+            if (callback) {
+                callback(indexMatchUps[maxIndex]);
+            }
+
+            setTimeout(() => {
+                // Remove and delete the icosahedron
+                this.scene.remove(d4);
+                this.physicsWorld.removeBody(bodyLOD);
+                this.dice.splice(this.dice.indexOf(d4), 1);
+            }, 1000);
+        });
+
+        // Link the visual mesh to the physical body
+        d4.body = bodyLOD;
+        // Link the physical body to the visual mesh
+        bodyLOD.visualref = d4;
+
+        console.log(d4);
+
+        this.spawnPhysicalDie(d4);
+    }
+
+    spawnD10FromModel(callback) {
+        if (this.dice.length > 10) return;
+
+        const d10 = models.d10.clone();
+        d10.castShadow = true;
+        const d10LOD = models.d10LOD.clone();
+
+        const shapeLOD = this.createShapeFromGeometry(d10LOD.geometry);
+
+        const bodyLOD = new CANNON.Body({
+            mass: diceMass,
+            shape: shapeLOD,
+            sleepSpeedLimit: 1.0,
+            sleepTimeLimit: 0.5,
+            collisionFilterGroup: 2,
+            collisionFilterMask: 1,
+        });
+
+        bodyLOD.addEventListener('sleep', (e) => {
+            const indexMatchUps = [
+                1,
+                2,
+                3,
+                4,
+                5,
+                10,
+                9,
+                8,
+                7,
+                6
+            ]
+
+            e.target.shapes[0].computeWorldFaceNormals(e.target.quaternion);
+            // Find the world face normal that is pointed the most up
+            const worldFaceNormals = e.target.shapes[0].worldFaceNormals;
+            let maxDot = 0;
+            let maxFace = null;
+            let maxIndex = 0;
+            for (let i = 0; i < worldFaceNormals.length; ++i) {
+                const face = worldFaceNormals[i];
+                const dot = face.dot(new CANNON.Vec3(0, 1, 0));
+                if (dot > maxDot) {
+                    maxDot = dot;
+                    maxFace = face;
+                    maxIndex = i;
+                }
+            }
+            console.log(maxFace, maxIndex, indexMatchUps[maxIndex]);
+
+            if (callback) {
+                callback(indexMatchUps[maxIndex]);
+            }
+
+            setTimeout(() => {
+                // Remove and delete the icosahedron
+                this.scene.remove(d10);
+                this.physicsWorld.removeBody(bodyLOD);
+                this.dice.splice(this.dice.indexOf(d10), 1);
+            }, 1000);
+        });
+
+        // Link the visual mesh to the physical body
+        d10.body = bodyLOD;
+        // Link the physical body to the visual mesh
+        bodyLOD.visualref = d10;
+
+        console.log(d10);
+
+        this.spawnPhysicalDie(d10);
+    }
+
+    spawnD12FromModel(callback) {
+        if (this.dice.length > 10) return;
+
+        const d12 = models.d12.clone();
+        d12.castShadow = true;
+        const d12LOD = models.d12LOD.clone();
+
+        const shapeLOD = this.createShapeFromGeometry(d12LOD.geometry);
+
+        const bodyLOD = new CANNON.Body({
+            mass: diceMass,
+            shape: shapeLOD,
+            sleepSpeedLimit: 1.0,
+            sleepTimeLimit: 0.5,
+            collisionFilterGroup: 2,
+            collisionFilterMask: 1,
+        });
+
+        bodyLOD.addEventListener('sleep', (e) => {
+            const indexMatchUps = [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                12,
+                11,
+                10,
+                9,
+                8,
+                7
+            ]
+
+            e.target.shapes[0].computeWorldFaceNormals(e.target.quaternion);
+            // Find the world face normal that is pointed the most up
+            const worldFaceNormals = e.target.shapes[0].worldFaceNormals;
+            let maxDot = 0;
+            let maxFace = null;
+            let maxIndex = 0;
+            for (let i = 0; i < worldFaceNormals.length; ++i) {
+                const face = worldFaceNormals[i];
+                const dot = face.dot(new CANNON.Vec3(0, 1, 0));
+                if (dot > maxDot) {
+                    maxDot = dot;
+                    maxFace = face;
+                    maxIndex = i;
+                }
+            }
+            console.log(maxFace, maxIndex, indexMatchUps[maxIndex]);
+
+            if (callback) {
+                callback(indexMatchUps[maxIndex]);
+            }
+
+            setTimeout(() => {
+                // Remove and delete the icosahedron
+                this.scene.remove(d12);
+                this.physicsWorld.removeBody(bodyLOD);
+                this.dice.splice(this.dice.indexOf(d12), 1);
+            }, 1000);
+        });
+
+        // Link the visual mesh to the physical body
+        d12.body = bodyLOD;
+        // Link the physical body to the visual mesh
+        bodyLOD.visualref = d12;
+
+        console.log(d12);
+
+        this.spawnPhysicalDie(d12);
+    }
+
+    spawnD20FromModel(callback) {
+        if (this.dice.length > 10) return;
+
+        const d20 = models.d20.clone();
+        d20.castShadow = true;
+        const d20LOD = models.d20LOD.clone();
+
+        // const shape = this.createShapeFromGeometry(d20.geometry);
+        // const shape = new CANNON.Box(new CANNON.Vec3(1, 1, 1));
+        const shapeLOD = this.createShapeFromGeometry(d20LOD.geometry);
+        // const shapeLOD = new CANNON.Sphere(1);
+
+        // const body = new CANNON.Body({
+        //     mass: diceMass,
+        //     shape: shape,
+        //     collisionFilterGroup: 1,
+        //     collisionFilterMask: 1,
+        // });
+
+        const bodyLOD = new CANNON.Body({
+            mass: diceMass,
+            shape: shapeLOD,
+            sleepSpeedLimit: 1.0,
+            sleepTimeLimit: 0.5,
+            collisionFilterGroup: 2,
+            collisionFilterMask: 1 | 2,
+        });
+
+        bodyLOD.addEventListener('sleep', (e) => {
+            const indexMatchUps = [
+                12,
+                11,
+                13,
+                14,
+                15,
+                4,
+                2,
+                16,
+                18,
+                20,
+                3,
+                1,
+                17,
+                19,
+                5,
+                7,
+                6,
+                10,
+                9,
+                8
+            ]
+
+            e.target.shapes[0].computeWorldFaceNormals(e.target.quaternion);
+            // Find the world face normal that is pointed the most up
+            const worldFaceNormals = e.target.shapes[0].worldFaceNormals;
+            let maxDot = 0;
+            let maxFace = null;
+            let maxIndex = 0;
+            for (let i = 0; i < worldFaceNormals.length; ++i) {
+                const face = worldFaceNormals[i];
+                const dot = face.dot(new CANNON.Vec3(0, 1, 0));
+                if (dot > maxDot) {
+                    maxDot = dot;
+                    maxFace = face;
+                    maxIndex = i;
+                }
+            }
+            console.log(maxFace, maxIndex, indexMatchUps[maxIndex]);
+
+            if (callback) {
+                callback(indexMatchUps[maxIndex]);
+            }
+
+            setTimeout(() => {
+                // Remove and delete the icosahedron
+                this.scene.remove(d20);
+                this.physicsWorld.removeBody(bodyLOD);
+                this.dice.splice(this.dice.indexOf(d20), 1);
+            }, 1000);
+        });
+
+        // body.addBody(bodyLOD);
+
+        // Link the visual mesh to the physical body
+        d20.body = bodyLOD;
+        // Link the physical body to the visual mesh
+        bodyLOD.visualref = d20;
+
+        console.log(d20);
+
+        this.spawnPhysicalDie(d20);
+    }
+
+    loadGLTF() {
+        const loader = new GLTFLoader();
+
+        const url = new URL('./assets/d20.glb', import.meta.url)
+        loader.load(
+            // resource URL
+            url+'',
+            // called when the resource is loaded
+            (gltf) => {
+                console.log(gltf);
+                // gltf.scene.scale.set(10, 10, 10);
+                gltf.scene.rotation.x = -Math.PI / 2;
+                window.scene?.scene?.add(gltf.scene);
+
+                // Create physics for gltf
+                const shape = this.createShapeFromGeometry(gltf.scene.children[0].geometry);
+                const body = new CANNON.Body({
+                    mass: diceMass,
+                    shape: shape,
+                    collisionFilterGroup: 2,
+                    collisionFilterMask: 1,
+                });
+
+                // Link the visual mesh to the physical body
+                gltf.scene.children[0].body = body;
+                // Link the physical body to the visual mesh
+                body.visualref = gltf.scene.children[0];
+
+                this.dice.push(gltf.scene.children[0]);
+
+                this.spawnPhysicalDie(gltf.scene.children[0]);
+            },
+            (xhr) => {
+                console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+            },
+            (error) => {
+                console.error(error)
+            }
+        );
+
+    //     const loader = new FBXLoader();
+
+    //     // Create a material that uses a texture
+    //     const textureURL = new URL('./assets/rpg-dice-set-pbr-game-ready-model/textures/RPGDiceSet_d.png', import.meta.url);
+    //     const normalURL = new URL('./assets/rpg-dice-set-pbr-game-ready-model/textures/RPGDiceSet_n.png', import.meta.url);
+    //     const texture = new THREE.TextureLoader().load(textureURL+'');
+    //     const normalMap = new THREE.TextureLoader().load(normalURL+'');
+    //     const material = new THREE.MeshLambertMaterial({
+    //         map: texture,
+    //         normalMap: normalMap,
+    //     });
+
+    //     const url = new URL('./assets/rpg-dice-set-pbr-game-ready-model/source/sm_DiceSet_02.fbx', import.meta.url);
+    //     loader.load(
+    //         // resource URL
+    //         url+'',
+    //         // called when the resource is loaded
+    //         (object) => {
+    //             console.log(object);
+    //             object.traverse((child) => {
+    //                 if (child instanceof THREE.Mesh) {
+    //                     child.material = material;
+    //                     child.castShadow = true;
+    //                 }
+    //             })
+
+
+    //             window.scene?.scene?.add(object);
+    //         },
+    //         (xhr) => {
+    //             console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+    //         },
+    //         (error) => {
+    //             console.error(error)
+    //         }
+    //     );
     }
 }
