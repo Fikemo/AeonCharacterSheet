@@ -10,6 +10,8 @@ const diceMass = 100;
 const gravity = -80;
 const models = {}
 
+window.THREE = THREE;
+
 const loadModels = () => {
     const loader = new GLTFLoader();
 
@@ -220,6 +222,9 @@ const loadModels = () => {
 
 loadModels();
 
+const debugSphereMaterial = new THREE.MeshBasicMaterial({ color: 0x808080 });
+const debugSpecialSphereMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
 export default class DiceScene {
     constructor() {
         this.scene = new THREE.Scene();
@@ -333,6 +338,8 @@ export default class DiceScene {
 
         document.body.appendChild(this.renderer.domElement);
 
+        this.models = models;
+
         this.lastTimestamp = 0;
         this.animate = this.animate.bind(this);
         this.animate();
@@ -375,6 +382,31 @@ export default class DiceScene {
                 }
 
                 die.stoppedMoving = true;
+            }
+
+            if (die.children.length > 0) {
+                const child = die.children[0];
+                const grandChildren = child.children;
+
+                // Get grandchild with highest world y value
+                let maxY = -Infinity;
+                let maxIndex = 0;
+                for (let i = 0; i < grandChildren.length; ++i) {
+                    const grandChild = grandChildren[i];
+                    const worldY = grandChild.getWorldPosition(new THREE.Vector3()).y;
+                    if (worldY > maxY) {
+                        maxY = worldY;
+                        maxIndex = i;
+                    }
+                }
+                for (let i = 0; i < grandChildren.length; ++i) {
+                    const grandChild = grandChildren[i];
+                    if (i === maxIndex) {
+                        grandChild.material = debugSpecialSphereMaterial;
+                    } else {
+                        grandChild.material = debugSphereMaterial;
+                    }
+                }
             }
         }
 
@@ -834,6 +866,10 @@ export default class DiceScene {
         if (this.dice.length > 10) return;
 
         const d10 = models.d10.clone();
+        const d10Child = new THREE.Object3D();
+        d10.add(d10Child);
+        d10Child.rotateY(Math.PI / 2);
+        d10Child.add(...this.debugSheresFromVertices(this.generatePentagonalPrismVertices()));
         d10.castShadow = true;
         const d10LOD = models.d10LOD.clone();
 
@@ -850,38 +886,22 @@ export default class DiceScene {
         });
 
         bodyLOD.addEventListener('sleep', (e) => {
-            const indexMatchUps = [
-                1,
-                2,
-                3,
-                4,
-                5,
-                10,
-                9,
-                8,
-                7,
-                6
-            ]
-
-            e.target.shapes[0].computeWorldFaceNormals(e.target.quaternion);
-            // Find the world face normal that is pointed the most up
-            const worldFaceNormals = e.target.shapes[0].worldFaceNormals;
-            let maxDot = 0;
-            let maxFace = null;
+            // Get bodyLOD.visualref.children[0].children and find the one that has the greatest world y value
             let maxIndex = 0;
-            for (let i = 0; i < worldFaceNormals.length; ++i) {
-                const face = worldFaceNormals[i];
-                const dot = face.dot(new CANNON.Vec3(0, 1, 0));
-                if (dot > maxDot) {
-                    maxDot = dot;
-                    maxFace = face;
+            let maxWorldY = 0;
+            for (let i = 0; i < e.target.visualref.children[0].children.length; ++i) {
+                const child = e.target.visualref.children[0].children[i];
+                const childWorldPosition = new THREE.Vector3();
+                child.getWorldPosition(childWorldPosition);
+                if (childWorldPosition.y > maxWorldY) {
+                    maxWorldY = childWorldPosition.y;
                     maxIndex = i;
                 }
             }
-            console.log(maxFace, maxIndex, indexMatchUps[maxIndex]);
+            console.log(maxIndex + 1);
 
             if (callback) {
-                callback(indexMatchUps[maxIndex]);
+                callback(maxIndex + 1);
             }
 
             setTimeout(() => {
@@ -906,6 +926,7 @@ export default class DiceScene {
         if (this.dice.length > 10) return;
 
         const d12 = models.d12.clone();
+        d12.add(new THREE.Mesh(new THREE.IcosahedronGeometry(1,0), new THREE.MeshBasicMaterial({ color: 0x0000ff, wireframe: true })));
         d12.castShadow = true;
         const d12LOD = models.d12LOD.clone();
 
@@ -978,6 +999,12 @@ export default class DiceScene {
         if (this.dice.length > 10) return;
 
         const d20 = models.d20.clone();
+        let dodecaGeo = new THREE.DodecahedronGeometry();
+        dodecaGeo = BufferGeometryUtils.mergeVertices(dodecaGeo);
+        const dodecaChild = new THREE.Mesh(dodecaGeo, new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true }));
+        dodecaChild.rotation.set(0.5133996817049744, 0.21886045276075416, -0.12181136135847638);
+        d20.add(dodecaChild);
+        dodecaChild.add(...this.generateDodecahedron());
         d20.castShadow = true;
         const d20LOD = models.d20LOD.clone();
 
@@ -1013,7 +1040,6 @@ export default class DiceScene {
             for (let i = 0; i < midPoints.length; ++i) {
                 const midpoint = midPoints[i];
                 midpoint.applyMatrix4(bodyLOD.visualref.matrixWorld);
-                console.log(midpoint);
 
                 if (midpoint.y > maxPoint.y) {
                     maxPoint.copy(midpoint);
@@ -1024,6 +1050,21 @@ export default class DiceScene {
             if (callback) {
                 callback(maxIndex + 1);
             }
+
+            // Get body.visualref's children[0].children and find the index of the one with the greatest y value in world space
+            let maxChild = null;
+            let maxChildIndex = 0;
+            for (let i = 0; i < bodyLOD.visualref.children[0].children.length; ++i) {
+                const child = bodyLOD.visualref.children[0].children[i];
+                child.updateMatrixWorld();
+                const childWorldPos = new THREE.Vector3();
+                child.getWorldPosition(childWorldPos);
+                if (childWorldPos.y > maxChild?.y || !maxChild) {
+                    maxChild = childWorldPos;
+                    maxChildIndex = i;
+                }
+            }
+            console.log(maxChild, maxChildIndex);            
 
             setTimeout(() => {
                 // Remove and delete the icosahedron
@@ -1121,6 +1162,176 @@ export default class DiceScene {
         //             console.error(error)
         //         }
         //     );
+    }
+
+    debugSheresFromVertices(vertices) {
+        const spheres = [];
+        for (const vertex of vertices) {
+            const geometry = new THREE.SphereGeometry(0.1, 8, 8);
+            const material = new THREE.MeshLambertMaterial();
+            const sphere = new THREE.Mesh(geometry, material);
+            sphere.position.copy(vertex);
+            spheres.push(sphere);
+        }
+
+        return spheres;
+    }
+
+    generatePentagonalPrismVertices(height = 1, radius = 1) {
+        const vertices = [];
+      
+        // Calculate the coordinates for the bottom pentagon
+        for (let i = 0; i < 5; i++) {
+          const angle = (i * 72 * Math.PI) / 180; // 72 degrees between each point
+          const x = radius * Math.cos(angle);
+          const y = radius * Math.sin(angle);
+          vertices.push(new THREE.Vector3(x, -height / 2, y));
+        }
+      
+        // Calculate the coordinates for the top pentagon with a 54-degree rotation
+        for (let i = 0; i < 5; i++) {
+          const angle = ((i * 72 + 36) * Math.PI) / 180; // 54-degree rotation
+          const x = radius * Math.cos(angle);
+          const y = radius * Math.sin(angle);
+          vertices.push(new THREE.Vector3(x, height / 2, y));
+        }
+      
+        // Create vertices for the sides of the prism
+        for (let i = 0; i < 5; i++) {
+          const nextIndex = (i + 1) % 5; // Wrap around to connect the last point to the first
+          const bottomVertex1 = vertices[i];
+          const bottomVertex2 = vertices[nextIndex];
+          const topVertex1 = vertices[i + 5];
+          const topVertex2 = vertices[nextIndex + 5];
+      
+          vertices.push(bottomVertex1, bottomVertex2, topVertex1);
+          vertices.push(bottomVertex2, topVertex2, topVertex1);
+        }
+      
+        return vertices;
+      }
+
+    generateDodecahedron() {
+        // Generate the vertices and faces of a dodecahedron
+        const phi = (1 + Math.sqrt(5)) / 2;
+
+        const vertices = [
+            new THREE.Vector3(1, 1, 1),
+            new THREE.Vector3(1, 1, -1),
+            new THREE.Vector3(1, -1, 1),
+            new THREE.Vector3(1, -1, -1),
+            new THREE.Vector3(-1, 1, 1),
+            new THREE.Vector3(-1, 1, -1),
+            new THREE.Vector3(-1, -1, 1),
+            new THREE.Vector3(-1, -1, -1),
+            new THREE.Vector3(0, 1 / phi, phi),
+            new THREE.Vector3(0, 1 / phi, -phi),
+            new THREE.Vector3(0, -1 / phi, phi),
+            new THREE.Vector3(0, -1 / phi, -phi),
+            new THREE.Vector3(phi, 0, 1 / phi),
+            new THREE.Vector3(phi, 0, -1 / phi),
+            new THREE.Vector3(-phi, 0, 1 / phi),
+            new THREE.Vector3(-phi, 0, -1 / phi),
+            new THREE.Vector3(1 / phi, phi, 0),
+            new THREE.Vector3(1 / phi, -phi, 0),
+            new THREE.Vector3(-1 / phi, phi, 0),
+            new THREE.Vector3(-1 / phi, -phi, 0)
+        ];
+
+        // return an array of spheres (radius 0.1) with positions at each vertex
+        const spheres = [];
+        for (const vertex of vertices) {
+            const geometry = new THREE.SphereGeometry(0.1, 8, 8);
+            const material = new THREE.MeshLambertMaterial();
+            const sphere = new THREE.Mesh(geometry, material);
+            sphere.position.copy(vertex);
+            spheres.push(sphere);
+        }
+
+        return spheres;
+    }
+
+    generateDodecaPoints() {
+        const midpoints = [];
+
+        // Define the vertices of a dodecahedron
+        const phi = (1 + Math.sqrt(5)) / 2;
+
+        const vertices = [
+            new THREE.Vector3(1, 1, 1),
+            new THREE.Vector3(1, 1, -1),
+            new THREE.Vector3(1, -1, 1),
+            new THREE.Vector3(1, -1, -1),
+            new THREE.Vector3(-1, 1, 1),
+            new THREE.Vector3(-1, 1, -1),
+            new THREE.Vector3(-1, -1, 1),
+            new THREE.Vector3(-1, -1, -1),
+            new THREE.Vector3(0, 1 / phi, phi),
+            new THREE.Vector3(0, 1 / phi, -phi),
+            new THREE.Vector3(0, -1 / phi, phi),
+            new THREE.Vector3(0, -1 / phi, -phi),
+            new THREE.Vector3(phi, 0, 1 / phi),
+            new THREE.Vector3(phi, 0, -1 / phi),
+            new THREE.Vector3(-phi, 0, 1 / phi),
+            new THREE.Vector3(-phi, 0, -1 / phi),
+            new THREE.Vector3(1 / phi, phi, 0),
+            new THREE.Vector3(1 / phi, -phi, 0),
+            new THREE.Vector3(-1 / phi, phi, 0),
+            new THREE.Vector3(-1 / phi, -phi, 0)
+        ];
+
+        // Define the faces of a dodecahedron
+        const faces = [
+            [0, 8, 9, 4, 16],
+            [0, 12, 1, 18, 8],
+            [0, 16, 2, 17, 12],
+            [1, 13, 3, 19, 18],
+            [1, 12, 17, 6, 13],
+            [2, 16, 4, 14, 10],
+            [2, 10, 5, 15, 17],
+            [3, 11, 7, 19, 13],
+            [3, 13, 6, 9, 11],
+            [4, 9, 6, 17, 15],
+            [4, 15, 5, 14, 16],
+            [5, 10, 14, 7, 11],
+            [5, 11, 9, 8, 10],
+            [6, 2, 10, 8, 9],
+            [7, 14, 4, 15, 19],
+            [7, 19, 15, 17, 6],
+            [12, 0, 18, 19, 3],
+            [12, 3, 11, 8, 1],
+            [13, 1, 18, 0, 6],
+            [14, 5, 10, 2, 7]
+        ];
+
+        // Calculate and store the midpoint for each face
+        for (const face of faces) {
+            const a = vertices[face[0]];
+            const b = vertices[face[1]];
+            const c = vertices[face[2]];
+            const d = vertices[face[3]];
+            const e = vertices[face[4]];
+
+            const midpoint = new THREE.Vector3(
+                (a.x + b.x + c.x + d.x + e.x) / 5,
+                (a.y + b.y + c.y + d.y + e.y) / 5,
+                (a.z + b.z + c.z + d.z + e.z) / 5
+            );
+
+            midpoints.push(midpoint);
+        }
+
+        // Generate a sphere of radius 0.01 at each midpoint
+        for (const midpoint of midpoints) {
+            const geometry = new THREE.SphereGeometry(0.1, 8, 8);
+            const material = new THREE.MeshLambertMaterial();
+            const sphere = new THREE.Mesh(geometry, material);
+            sphere.position.copy(midpoint);
+            sphere.castShadow = true;
+            this.scene.add(sphere);
+        }
+
+        return midpoints;
     }
 
     generateIcosaPoints() {
