@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from "./App.js";
+import Events from './Events.js';
 import './index.css';
 import AeonCharacter from './AeonCharacter.js';
 import reportWebVitals from './reportWebVitals';
@@ -15,6 +16,8 @@ import DiceScene from './DiceScene.js';
 const ACData = JSON.parse(localStorage.getItem('ACData')) || defaultCharacter;
 const AC = new AeonCharacter(ACData);
 window.AC = AC;
+
+window.Events = Events;
 
 window.scene = new DiceScene();
 

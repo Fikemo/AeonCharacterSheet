@@ -12,7 +12,7 @@ import { styled, useTheme } from "@mui/material/styles";
 
 import Grid2 from "@mui/material/Unstable_Grid2";
 
-import Events from "./Events";
+import Events from "./Events.js";
 
 import {
     Autocomplete,
@@ -519,17 +519,17 @@ const IconButtonRow = (props) => {
         <Paper elevation={paperElevation}>
             <Stack direction="row" spacing={1}>
                 <DieButton title="D4" sides={4} icon={d4Icon}
-                onClick={()=>window.scene?.spawnD4FromModel((value)=>{setDiceHistory([`D4: ${value}`, ... diceHistory])})}/>
+                onClick={()=>window.scene?.throwDie("d4")}/>
                 <DieButton title="D6" sides={6} icon={d6Icon}
-                onClick={()=>window.scene?.spawnD6FromModel((value)=>{setDiceHistory([`D6: ${value}`, ... diceHistory])})}/>
+                onClick={()=>window.scene?.throwDie("d6")}/>
                 <DieButton title="D8" sides={8} icon={d8Icon}
-                onClick={()=>window.scene?.spawnD8FromModel((value)=>{setDiceHistory([`D8: ${value}`, ... diceHistory])})}/>
+                onClick={()=>window.scene?.throwDie("d8")}/>
                 <DieButton title="D10" sides={10} icon={d10Icon}
-                onClick={()=>window.scene?.spawnD10FromModel((value)=>{setDiceHistory([`D10: ${value}`, ... diceHistory])})}/>
+                onClick={()=>window.scene?.throwDie("d10")}/>
                 <DieButton title="D12" sides={12} icon={d12Icon}
-                onClick={()=>window.scene?.spawnD12FromModel((value)=>{setDiceHistory([`D12: ${value}`, ... diceHistory])})}/>
+                onClick={()=>window.scene?.throwDie("d12")}/>
                 <DieButton title="D20" sides={20} icon={d20Icon}
-                onClick={()=>window.scene?.spawnD20FromModel((value)=>{setDiceHistory([`D20: ${value}`, ...diceHistory])})}/>
+                onClick={()=>window.scene?.throwDie("d20")}/>
 
                 <Divider orientation="vertical" flexItem />
 
@@ -557,6 +557,21 @@ const DiceHistory = (props) => {
     const clearDiceHistory = () => {
         setDiceHistory([]);
     };
+
+    const mountedOnce = useRef(false);
+
+    const updateDiceHistory = ({value, sides}) => {
+        setDiceHistory(diceHistory => [`${sides}: ${value}`, ...diceHistory]);
+    }
+
+    useEffect(() => {
+        if (!mountedOnce.current) {
+            Events.on('dieRoll', updateDiceHistory);
+
+            mountedOnce.current = true;
+            return;
+        }
+    }, []);
 
     return (
         <Paper elevation={paperElevation}>
