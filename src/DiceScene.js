@@ -66,26 +66,26 @@ const indexPairs = {
         11: 7,
     },
     d20: {
-        0:  7,
-        1:  2,
-        2:  10,
-        3:  16,
-        4:  5,
-        5:  11,
-        6:  19,
-        7:  14,
-        8:  3,
-        9:  4,
-        10: 17,
-        11: 18,
-        12: 6,
+        0:  5,
+        1:  7,
+        2:  11,
+        3:  19,
+        4:  2,
+        5:  10,
+        6:  14,
+        7:  16,
+        8:  15,
+        9:  12,
+        10: 9,
+        11: 6,
+        12: 13,
         13: 1,
         14: 20,
-        15: 15,
-        16: 8,
-        17: 9,
-        18: 12,
-        19: 13,
+        15: 8,
+        16: 18,
+        17: 4,
+        18: 17,
+        19: 3,
     },
 }
 
@@ -176,7 +176,7 @@ export default class DiceScene {
         directionalLight.shadow.camera.right = 10;
         directionalLight.shadow.camera.top = 10;
         directionalLight.shadow.camera.bottom = -10;
-        directionalLight.shadow.mapSize.width = 2048;
+        directionalLight.shadow.mapSize.width = 1024 * 4;
         this.scene.add(directionalLight);
 
         // Add Overhead Directional Light
@@ -326,7 +326,7 @@ export default class DiceScene {
         this.physicsWorld.addBody(body);
 
         mesh.castShadow = true;
-        mesh.receiveShadow = true;
+        mesh.receiveShadow = false;
         mesh.position.copy(body.position);
         mesh.quaternion.copy(body.quaternion);
         this.scene.add(mesh);
