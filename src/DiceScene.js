@@ -113,8 +113,8 @@ const loadModels = () => {
         const URL = URLs[i];
         const LODURL = LODURLs[i];
         const diceName = diceNames[i];
-        loader.load(URL + '', (gltf) => {
-            const model = gltf.scene.children[0];
+        loader.load(URL + '', (glb) => {
+            const model = glb.scene.children[0];
             model.name = diceName;
             model.position.set(0, 0, 0);
             model.rotation.set(0, 0, 0);
@@ -124,8 +124,8 @@ const loadModels = () => {
         }
         );
 
-        loader.load(LODURL + '', (gltf) => {
-            const model = gltf.scene.children[0];
+        loader.load(LODURL + '', (glb) => {
+            const model = glb.scene.children[0];
             model.name = diceName;
             model.position.set(0, 0, 0);
             model.rotation.set(0, 0, 0);
@@ -215,13 +215,15 @@ export default class DiceScene {
 
         document.body.appendChild(this.renderer.domElement);
 
-        this.models = models;
-
         // this.cannonDebugger = new CannonDebugger(this.scene, this.physicsWorld, { color: 0xff0000 });
 
         this.lastTimestamp = 0;
         this.animate = this.animate.bind(this);
         this.animate(0);
+    }
+
+    get models() {
+        return models;
     }
 
     animate(timestamp) {
