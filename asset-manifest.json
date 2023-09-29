@@ -1,33 +1,33 @@
 {
   "files": {
     "main.css": "/AeonCharacterSheet/static/css/main.5ab7cb64.css",
-    "main.js": "/AeonCharacterSheet/static/js/main.5f4bb0e1.js",
+    "main.js": "/AeonCharacterSheet/static/js/main.4ebc39d3.js",
     "static/js/787.1dff9d22.chunk.js": "/AeonCharacterSheet/static/js/787.1dff9d22.chunk.js",
-    "static/media/d12.glb": "/AeonCharacterSheet/static/media/d12.3a7c40dcf9094ea7bd84.glb",
     "static/media/d12LOD.glb": "/AeonCharacterSheet/static/media/d12LOD.1c57ea2ef94fd34c123a.glb",
-    "static/media/d10.glb": "/AeonCharacterSheet/static/media/d10.97315c78c4e095549310.glb",
-    "static/media/d8.glb": "/AeonCharacterSheet/static/media/d8.4b96b89d7dddd7595d19.glb",
-    "static/media/d4.glb": "/AeonCharacterSheet/static/media/d4.fbb24ce43ca84d62e233.glb",
+    "static/media/d12.glb": "/AeonCharacterSheet/static/media/d12.5e2d202868e12485d618.glb",
     "static/media/d20.glb": "/AeonCharacterSheet/static/media/d20.bf7fa23052ecbfe24a1b.glb",
-    "static/media/d6.glb": "/AeonCharacterSheet/static/media/d6.9f46d2296bc94d056357.glb",
+    "static/media/d10.glb": "/AeonCharacterSheet/static/media/d10.de9138d2b8deaf9a33e5.glb",
+    "static/media/d4.glb": "/AeonCharacterSheet/static/media/d4.a4ac14eba02abd60b65c.glb",
+    "static/media/d8.glb": "/AeonCharacterSheet/static/media/d8.740f9da8de2d3f0ca296.glb",
+    "static/media/d6.glb": "/AeonCharacterSheet/static/media/d6.159288be203d42e1b1a8.glb",
     "static/media/d20LOD.glb": "/AeonCharacterSheet/static/media/d20LOD.e2151c5ecaae99d56ace.glb",
     "static/media/d10LOD.glb": "/AeonCharacterSheet/static/media/d10LOD.3e934e009f10657a1a8f.glb",
+    "index.html": "/AeonCharacterSheet/index.html",
     "static/media/d6LOD.glb": "/AeonCharacterSheet/static/media/d6LOD.c54e0ae86e977b45b3eb.glb",
     "static/media/d12.svg": "/AeonCharacterSheet/static/media/d12.8e8901d8b7b6581b9a49f56a0731a5c3.svg",
     "static/media/d8LOD.glb": "/AeonCharacterSheet/static/media/d8LOD.8f4ce9de44003927d329.glb",
     "static/media/d4LOD.glb": "/AeonCharacterSheet/static/media/d4LOD.653cfd18aa7876574170.glb",
     "static/media/d10.svg": "/AeonCharacterSheet/static/media/d10.3f122aae81d70d5cd786ede287fd60c0.svg",
-    "index.html": "/AeonCharacterSheet/index.html",
     "static/media/d20.svg": "/AeonCharacterSheet/static/media/d20.7d3007b77081daf56e100b9cfa5516e2.svg",
     "static/media/d8.svg": "/AeonCharacterSheet/static/media/d8.5c22f4fdabd6ea68225d62d21f6274ca.svg",
     "static/media/d4.svg": "/AeonCharacterSheet/static/media/d4.6213a80ab1294a6126609ed9ebceb3c9.svg",
     "static/media/d6.svg": "/AeonCharacterSheet/static/media/d6.da6f7d009113300669f0730d9f0a1499.svg",
     "main.5ab7cb64.css.map": "/AeonCharacterSheet/static/css/main.5ab7cb64.css.map",
-    "main.5f4bb0e1.js.map": "/AeonCharacterSheet/static/js/main.5f4bb0e1.js.map",
+    "main.4ebc39d3.js.map": "/AeonCharacterSheet/static/js/main.4ebc39d3.js.map",
     "787.1dff9d22.chunk.js.map": "/AeonCharacterSheet/static/js/787.1dff9d22.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5ab7cb64.css",
-    "static/js/main.5f4bb0e1.js"
+    "static/js/main.4ebc39d3.js"
   ]
 }
