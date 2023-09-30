@@ -87,6 +87,28 @@ import races from "./sets/races.json";
 import weapons from "./sets/weapons.json";
 import skills from "./sets/skills.json";
 
+import config from "./Config.js";
+
+let weaponsSheet = null;
+function startAPI() {
+    window.gapi.client.init({
+        'apiKey': config.apiKey,
+        'discoveryDocs': ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
+    }).then(function () {
+        return window.gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: '1zxFcCVvQxBijCCWmPziN0W34QglaDyrwEqEB3nKNJhY',
+            range: 'Weapons!A1:Z1000',
+        });
+    }).then(function (response) {
+        weaponsSheet = response.result;
+        console.log(weaponsSheet);
+    }, function (reason) {
+        console.log('Error: ' + reason.result.error.message);
+    });
+}
+
+window.gapi.load("client", startAPI);
+
 export const ACContext = createContext();
 const diceHistoryContext = createContext();
 
