@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/AeonCharacterSheet/static/css/main.5ab7cb64.css",
-    "main.js": "/AeonCharacterSheet/static/js/main.890c2ec7.js",
+    "main.js": "/AeonCharacterSheet/static/js/main.4ebc39d3.js",
     "static/js/787.1dff9d22.chunk.js": "/AeonCharacterSheet/static/js/787.1dff9d22.chunk.js",
     "static/media/d12LOD.glb": "/AeonCharacterSheet/static/media/d12LOD.1c57ea2ef94fd34c123a.glb",
     "static/media/d12.glb": "/AeonCharacterSheet/static/media/d12.5e2d202868e12485d618.glb",
@@ -23,11 +23,11 @@
     "static/media/d4.svg": "/AeonCharacterSheet/static/media/d4.6213a80ab1294a6126609ed9ebceb3c9.svg",
     "static/media/d6.svg": "/AeonCharacterSheet/static/media/d6.da6f7d009113300669f0730d9f0a1499.svg",
     "main.5ab7cb64.css.map": "/AeonCharacterSheet/static/css/main.5ab7cb64.css.map",
-    "main.890c2ec7.js.map": "/AeonCharacterSheet/static/js/main.890c2ec7.js.map",
+    "main.4ebc39d3.js.map": "/AeonCharacterSheet/static/js/main.4ebc39d3.js.map",
     "787.1dff9d22.chunk.js.map": "/AeonCharacterSheet/static/js/787.1dff9d22.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5ab7cb64.css",
-    "static/js/main.890c2ec7.js"
+    "static/js/main.4ebc39d3.js"
   ]
 }
