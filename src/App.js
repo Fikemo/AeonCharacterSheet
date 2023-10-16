@@ -8,6 +8,8 @@ import {
     forwardRef,
 } from "react";
 
+import React from "react";
+
 import { styled, useTheme } from "@mui/material/styles";
 
 import Grid2 from "@mui/material/Unstable_Grid2";
@@ -179,6 +181,13 @@ const CharacterImage = (props) => {
         const reader = new FileReader();
 
         reader.onload = (e) => {
+            console.log(e.target.result.length);
+            // Check that the file size is not too large
+            if (e.target.result.length > 10000000) {
+                console.error("Image is too large");
+                return;
+            }
+
             setImage(e.target.result);
 
             dispatchACData({
@@ -519,7 +528,7 @@ const DieButton = (props) => {
     const [diceHistory, setDiceHistory] = useContext(diceHistoryContext);
 
     return (
-        <Tooltip title={props.title} >
+        <Tooltip title={props.title + " " + props.keyPress} >
             <IconButton
                 onClick={() => {
                     // let roll = Math.floor(Math.random() * props.sides) + 1;
@@ -527,10 +536,36 @@ const DieButton = (props) => {
                     // setDiceHistory([roll, ...diceHistory]);
                     props.onClick?.();
                 }}
+                sx={{
+                    height: "40px",
+                    width: "40px",
+                    padding: "0px",
+                }}
             >
-                <img src={props.icon} alt={props.title} height={24} width={24} />
+                <img src={props.icon} alt={props.title} height="80%" width="80%" />
             </IconButton>
         </Tooltip>
+    )
+}
+
+const DiceButtonRow = () => {
+    return (
+        <Paper elevation={paperElevation}>
+            <div className="DiceBox" style={{ display: "flex", flexDirection: "row", alignContent: "center", justifyContent: "space-between", flexGrow: 1, paddingLeft: "10px", paddingRight: "10px"}}>
+                <DieButton title="D4" keyPress="(1)" sides={4} icon={d4Icon}
+                onClick={()=>window.scene?.throwDie("d4")}/>
+                <DieButton title="D6" keyPress="(2)" sides={6} icon={d6Icon}
+                onClick={()=>window.scene?.throwDie("d6")}/>
+                <DieButton title="D8" keyPress="(3)" sides={8} icon={d8Icon}
+                onClick={()=>window.scene?.throwDie("d8")}/>
+                <DieButton title="D10" keyPress="(4)" sides={10} icon={d10Icon}
+                onClick={()=>window.scene?.throwDie("d10")}/>
+                <DieButton title="D12" keyPress="(5)" sides={12} icon={d12Icon}
+                onClick={()=>window.scene?.throwDie("d12")}/>
+                <DieButton title="D20" keyPress="(6)" sides={20} icon={d20Icon}
+                onClick={()=>window.scene?.throwDie("d20")}/>
+            </div>
+        </Paper>
     )
 }
 
@@ -539,20 +574,7 @@ const IconButtonRow = (props) => {
 
     return (
         <Paper elevation={paperElevation}>
-            <Stack direction="row" spacing={1}>
-                <DieButton title="D4" sides={4} icon={d4Icon}
-                onClick={()=>window.scene?.throwDie("d4")}/>
-                <DieButton title="D6" sides={6} icon={d6Icon}
-                onClick={()=>window.scene?.throwDie("d6")}/>
-                <DieButton title="D8" sides={8} icon={d8Icon}
-                onClick={()=>window.scene?.throwDie("d8")}/>
-                <DieButton title="D10" sides={10} icon={d10Icon}
-                onClick={()=>window.scene?.throwDie("d10")}/>
-                <DieButton title="D12" sides={12} icon={d12Icon}
-                onClick={()=>window.scene?.throwDie("d12")}/>
-                <DieButton title="D20" sides={20} icon={d20Icon}
-                onClick={()=>window.scene?.throwDie("d20")}/>
-
+            <Stack direction="row" spacing={0}>
                 <Divider orientation="vertical" flexItem />
 
                 <UploadButton />
@@ -739,7 +761,14 @@ const SkillAccordion = (props) => {
                 <Typography>{props.skill.name}</Typography>
             </AccordionSummary>
             <StyledAccordionDetails>
-                <Typography>{props.skill.description}</Typography>
+                <Typography>
+                    {props.skill.description.split('\n').map((line, index) => (
+                        <React.Fragment key={index}>
+                            {line}
+                            <br />
+                        </React.Fragment>
+                    ))}
+                </Typography>
             </StyledAccordionDetails>
             <AccordionActions sx={{ backgroundColor: "#f5f5f5" }}>
                 <SkillDialog
@@ -1052,7 +1081,7 @@ export default function App() {
             <Container disableGutters maxWidth={false} sx={{ maxWidth: "2400px" }}>
                 <Box sx={{ bgcolor: "lightgray", minHeight: "100vh", p: theme.spacing(1) }}>
                     <Grid2 container spacing={1} >
-                        <Grid2 xs={12} md={6} xl={3} >
+                        <Grid2 xs={12} lg={3} >
                             <Stack spacing={1} >
                                 <CharacterName />
                                 <CharacterImage />
@@ -1061,23 +1090,24 @@ export default function App() {
                                 <Description />
                             </Stack>
                         </Grid2>
-                        <Grid2 xs={12} md={6} xl={3} >
+                        <Grid2 xs={12} md={3} >
                             <Stack spacing={1} >
                                 <Health />
                                 <StatBoxes />
                                 <Skills />
                             </Stack>
                         </Grid2>
-                        <Grid2 xs={12} md={6} xl={3} >
+                        <Grid2 xs={12} md={3} >
                             <Stack spacing={1} >
                                 <Money />
                                 <Inventory />
                             </Stack>
                         </Grid2>
-                        <Grid2 xs={12} md={6} xl={3} >
+                        <Grid2 xs={12} md={3} >
                             <Stack spacing={1} >
                                 <diceHistoryContext.Provider value={[diceHistory, setDiceHistory]}>
                                     <IconButtonRow />
+                                    <DiceButtonRow />
                                     <DiceHistory />
                                 </diceHistoryContext.Provider>
                                 <Notes />
