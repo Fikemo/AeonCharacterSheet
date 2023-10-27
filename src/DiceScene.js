@@ -223,12 +223,14 @@ export default class DiceScene {
 
         // On keypress of a number key, throw the corresponding die 1 = d4, 2 = d6, etc.
         document.addEventListener('keypress', (e) => {
-            if (e.key === '1') this.throwDie('d4');
-            if (e.key === '2') this.throwDie('d6');
-            if (e.key === '3') this.throwDie('d8');
-            if (e.key === '4') this.throwDie('d10');
-            if (e.key === '5') this.throwDie('d12');
-            if (e.key === '6') this.throwDie('d20');
+            if (e.target.tagName.toLowerCase() !== 'input') {
+                if (e.key === '1') this.throwDie('d4');
+                if (e.key === '2') this.throwDie('d6');
+                if (e.key === '3') this.throwDie('d8');
+                if (e.key === '4') this.throwDie('d10');
+                if (e.key === '5') this.throwDie('d12');
+                if (e.key === '6') this.throwDie('d20');
+            }
         });
     }
 
