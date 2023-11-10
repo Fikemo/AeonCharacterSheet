@@ -376,13 +376,41 @@ const Health = (props) => {
     )
 }
 
+function getSkillStatModifiers(statName) {
+    let statModifier = 0;
+    const usedCategories = new Map();
+    for (let skill of window.AC.data.skills) {
+        if (skill[statName] > 0) {
+            if (skill.category) {
+                if (usedCategories.has(skill.category)) {
+                    if (skill[statName] > usedCategories.get(skill.category)) {
+                        usedCategories.set(skill.category, skill[statName]);
+                    }
+                } else {
+                    usedCategories.set(skill.category, skill[statName]);
+                }
+            } else {
+                statModifier += skill[statName];
+            }
+        }
+    }
+
+    for (let [category, value] of usedCategories) {
+        statModifier += value;
+    }
+
+    return statModifier;
+}
+
 const StatBox = (props) => {
     const [ACData, dispatchACData] = useContext(ACContext);
     const statName = props.stat;
 
     const title = statName.charAt(0).toUpperCase() + statName.slice(1);
 
-    const totalStatValue = ACData.stats?.[statName] + ACData.statModifiers?.[statName] ?? 0;
+    const skillModifier = getSkillStatModifiers(statName);
+
+    const totalStatValue = ACData.stats?.[statName] + ACData.statModifiers?.[statName] + skillModifier ?? 0;
 
     return (
         <Grid2 xs={4}>
@@ -666,6 +694,13 @@ const SkillDialog = (props) => {
 
     const [tempSkill, setTempSkill] = useState({
         name: props.edit ? ACData.skills[props.index].name : "",
+        category: props.edit ? ACData.skills[props.index].category : "",
+        strength: props.edit ? ACData.skills[props.index].strength : 0,
+        presence: props.edit ? ACData.skills[props.index].presence : 0,
+        agility: props.edit ? ACData.skills[props.index].agility : 0,
+        intelligence: props.edit ? ACData.skills[props.index].intelligence : 0,
+        spirit: props.edit ? ACData.skills[props.index].spirit : 0,
+        constitution: props.edit ? ACData.skills[props.index].constitution : 0,
         description: props.edit ? ACData.skills[props.index].description : "",
     });
 
@@ -695,6 +730,13 @@ const SkillDialog = (props) => {
     useEffect(() => {
         setTempSkill({
             name: props.edit ? ACData.skills[props.index].name : "",
+            category: props.edit ? ACData.skills[props.index].category : "",
+            strength: props.edit ? ACData.skills[props.index].strength : 0,
+            presence: props.edit ? ACData.skills[props.index].presence : 0,
+            agility: props.edit ? ACData.skills[props.index].agility : 0,
+            intelligence: props.edit ? ACData.skills[props.index].intelligence : 0,
+            spirit: props.edit ? ACData.skills[props.index].spirit : 0,
+            constitution: props.edit ? ACData.skills[props.index].constitution : 0,
             description: props.edit ? ACData.skills[props.index].description : "",
         })
     }, [props.open])
@@ -707,10 +749,38 @@ const SkillDialog = (props) => {
                     id="skill-name-input"
                     label="Name"
                     fullWidth
-                    value={tempSkill.name}
+                    value={tempSkill.name || ''}
                     onChange={(e) => setTempSkill({ ...tempSkill, name: e.target.value })}
                     sx={{ mt: 1 }}
                 />
+                <TextField
+                    id="skill-category-input"
+                    label="Category"
+                    fullWidth
+                    value={tempSkill.category || ''}
+                    onChange={(e) => setTempSkill({ ...tempSkill, category: e.target.value })}
+                    sx={{ mt: 1 }}
+                />
+                {/* Row of number inputs corresponding to stat modifiers */}
+                <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
+                    {Object.keys(ACData.stats).map((stat, index) => {
+                        return (
+                            <TextField
+                                key={index}
+                                id={`${stat}-input`}
+                                label={stat}
+                                type="number"
+                                value={tempSkill[stat] ?? 0}
+                                onChange={(e) => {
+                                    if (e.target.value === "") {
+                                        setTempSkill({ ...tempSkill, [stat]: 0 })
+                                    }
+                                    setTempSkill({ ...tempSkill, [stat]: parseInt(e.target.value) })
+                                }}
+                            />
+                        )
+                    })}
+                </Stack>
                 <TextField
                     id="skill-description-input"
                     label="Description"
@@ -855,7 +925,14 @@ const InventoryAccordion = (props) => {
                 <Typography>{props.item.name}</Typography>
             </AccordionSummary>
             <StyledAccordionDetails>
-                <Typography>{props.item.description}</Typography>
+                <Typography>
+                    {props.item.description.split('\n').map((line, index) => (
+                        <React.Fragment key={index}>
+                            {line}
+                            <br />
+                        </React.Fragment>
+                    ))}
+                </Typography>
             </StyledAccordionDetails>
             <AccordionActions sx={{ backgroundColor: "#f5f5f5" }}>
                 <InventoryDialog
